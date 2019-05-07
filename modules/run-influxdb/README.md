@@ -60,7 +60,7 @@ The Influx cluster needs a "rally point", which is a single Meta node that is re
 
 We need a way to unambiguously and reliably select exactly one rally point. If there's more than one node, you may end up with multiple separate clusters instead of just one!
 
-The `run-influxdb` script can automatically picks a rally point automatically by:
+The `run-influxdb` script can automatically pick a rally point automatically by:
 
 1. Looking up all the servers in the Instance Group specified via the `--cluster-name` parameter.
 
