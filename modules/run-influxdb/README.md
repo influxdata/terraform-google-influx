@@ -39,16 +39,16 @@ This script can be used to configure and initialize InfluxDB. This script has be
 
 Options:
 
-  --hostname         The hostname of the current node.
-  --node-type        Specifies whether the instance will be a Meta or Data node. Must be one of 'meta' or 'data'.
-  --meta-group-name  The name of the Instance Group that contains meta nodes.
-  --data-group-name  The name of the Instance Group that contains data nodes.
-  --region           The GCP region the Instance Groups are deployed in.
-  --auto-fill        Search the InfluxDB config file for KEY and replace it with VALUE. May be repeated.
+  --node-type           Specifies whether the instance will be a Meta or Data node. Must be one of 'meta' or 'data'.
+  --meta-group-name     The name of the Instance Group that contains meta nodes.
+  --hostname            Fully qualified hostname of the instance.
+  --private-ip          Private IPv4 address of the instance.
+  --region              The GCP region the Instance Groups are deployed in.
+  --auto-fill           Search the InfluxDB config file for KEY and replace it with VALUE. May be repeated.
 
 Example:
 
-  run-influxdb --node-type meta --meta-group-name ig-meta --data-group-name ig-data --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'
+  run-influxdb --node-type meta --meta-group-name ig-meta --hostname data-inst-9sx1.acme.internal --private-ip 10.0.2.3 --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'
 ```
 
 ## Picking a rally point
@@ -62,7 +62,7 @@ We need a way to unambiguously and reliably select exactly one rally point. If t
 
 The `run-influxdb` script can automatically pick a rally point automatically by:
 
-1. Looking up all the servers in the Instance Group specified via the `--cluster-name` parameter.
+1. Looking up all the servers in the Instance Group specified via the `--meta-group-name` parameter.
 
 1. Pick the meta node with the alphabetically first Instance ID.
 
