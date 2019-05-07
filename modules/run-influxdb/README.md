@@ -9,7 +9,7 @@ There is a good chance it will work on other flavors of Debian, CentOS, and RHEL
 
 ## Quick start
 
-This script assumes you installed it, plus all of its dependencies (including InfluxDB itself), using the 
+This script assumes you installed influxdb, plus all of its dependencies (including InfluxDB itself), using the 
 [install-influxdb module](../install-influxdb). 
 
 This will:
