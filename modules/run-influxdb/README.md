@@ -77,6 +77,7 @@ Moreover, if you're ever calling `run-influxdb` interactively (i.e., you're manu
 rather than executing a script), be careful of passing credentials directly on the command line, or they will be stored, in plaintext, [in Bash history](https://www.digitalocean.com/community/tutorials/how-to-use-bash-history-commands-and-expansions-on-a-linux-vps)!
 
 You can either use a CLI tool to set the credentials as environment variables or you can [temporarily disable Bash history](https://linuxconfig.org/how-to-disable-bash-shell-commands-history-on-linux). 
+Also, a [space before executing the command will prevent that command from going into the history](https://stackoverflow.com/a/640412).
 
 ## Required permissions
 
@@ -84,9 +85,6 @@ The `run-influxdb` script assumes the [Compute Instance Service Account](<https:
 
 * `compute.instanceGroups.get`
 * `compute.instanceGroups.list`
-* TODO: Verify which permissions are really needed
-
-These permissions are automatically added by the [influxdb-cluster module](../influxdb-cluster).
 
 ## Debugging tips and tricks
 
