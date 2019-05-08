@@ -1,7 +1,11 @@
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_influx)
 # TICK Stack GCP Module
 
-This repo contains the **official** module for deploying the [TICK stack](https://www.influxdata.com/time-series-platform/) on [GCP](https://cloud.google.com/gcp/) using [Terraform](https://www.terraform.io/) and [Packer](https://www.packer.io/).
+This repo contains the **official** module for deploying the [TICK Stack](https://www.influxdata.com/time-series-platform/) on [GCP](https://cloud.google.com/gcp/) using [Terraform](https://www.terraform.io/) and [Packer](https://www.packer.io/).
+
+The TICK Stack is a loosely coupled yet tightly integrated set of open source projects designed to handle massive amounts of time-stamped information to support your metrics analysis needs. 
+
+Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](https://github.com/influxdata/influxdb), [Chronograf](https://github.com/influxdata/chronograf) and [Kapacitor](https://github.com/influxdata/kapacitor) are known as the TICK Stack.
 
 ![TICK multi-cluster architecture](./_docs/tick-multi-cluster-architecture.png?raw=true)
 
@@ -60,7 +64,7 @@ module](modules/chronograf-cluster).
     1. Configure the server to execute the [run-kapacitor](modules/run-kapacitor) script during boot.
     
 1. Deploy a load balancer in front of the instance group.
-    
+  
 
 See the [examples folder](examples) for working
 sample code.
