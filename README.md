@@ -48,8 +48,8 @@ module](modules/influxdb-cluster).
 
     1. Use the scripts in the [install-chronograf](modules/install-chronograf) modules to create a machine image with Chronograf installed.
     
-    1. Deploy the image in a single instance group using the [chronograf-cluster
-module](modules/chronograf-cluster).
+    1. Deploy the image in a single instance group using the [chronograf-server
+module](modules/chronograf-server).
     
     1. Configure the server to execute the [run-chronograf](modules/run-chronograf) script during boot.
 
@@ -59,7 +59,7 @@ module](modules/chronograf-cluster).
 
     1. Use the scripts in the [install-kapacitor](modules/install-kapacitor) modules to create a machine image with Kapacitor installed.
     
-    1. Deploy the image in a single instance group using the [kapacitor-server module](modules/kapacitor-cluster).
+    1. Deploy the image in a single instance group using the [kapacitor-server module](modules/kapacitor-server).
 
     1. Configure the server to execute the [run-kapacitor](modules/run-kapacitor) script during boot.
     
