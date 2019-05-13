@@ -86,6 +86,8 @@ The `run-influxdb` script assumes the [Compute Instance Service Account](<https:
 * `compute.instanceGroups.get`
 * `compute.instanceGroups.list`
 
+You can use the [influxdb-service-account module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-service-account) to set up a service account with minimum required roles.
+
 ## Debugging tips and tricks
 
 Some tips and tricks for debugging issues with your InfluxDB cluster:
