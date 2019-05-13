@@ -14,7 +14,7 @@ To build the InfluxDB Image:
 1. Update the `variables` section of the `influxdb.json` Packer template to specify the GCP region and zone, and InfluxDB version you wish to use.
 1. To build an Ubuntu image for InfluxDB Enterprise: `packer build -only=influxdb-gcp-ubuntu influxdb.json`.
 
-When the build finishes, it will output the ID of the new image. To see how to deploy the image, check out the [influxdb-cluster-simple](../influxdb-cluster-simple) and [influxdb-multi-cluster](../influxdb-multi-cluster) examples.
+When the build finishes, it will output the ID of the new image. To see how to deploy the image, check out the [influxdb-oss](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/influxdb-oss) and [influxdb-enterprise](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/influxdb-enterprise) examples.
 
 ## Creating your own Packer template for production usage
 
