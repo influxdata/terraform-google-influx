@@ -51,8 +51,8 @@ Your code should look more like this:
 }
 ```
 
-You should replace `<MODULE_VERSION>` in the code above with the version of this module that you want to use (see the [Releases Page](../../releases) for all available versions). That's because for production usage, you should always use a fixed, known version of this Module, downloaded from the official Git repo via `git clone`. On the other hand, when you're just experimenting with the Module, it's OK to use a local checkout of the Module, uploaded from your own computer via the `file` provisioner.
+You should replace `<MODULE_VERSION>` in the code above with the version of this module that you want to use (see the [Releases Page](https://github.com/gruntwork-io/terraform-google-influx/releases) for all available versions). That's because for production usage, you should always use a fixed, known version of this Module, downloaded from the official Git repo via `git clone`. On the other hand, when you're just experimenting with the Module, it's OK to use a local checkout of the Module, uploaded from your own computer via the `file` provisioner.
 
 ## Local testing
 
-The Packer template in this example folder can build not only AMIs, but also Docker images for local testing. This is convenient for testing out the various scripts in the `modules` folder without having to wait for an AMI to build and a bunch of EC2 Instances to boot up. See the [influxdb-docker folder](../influxdb-docker) for instructions.
+The Packer template in this example folder can build not only AMIs, but also Docker images for local testing. This is convenient for testing out the various scripts in the `modules` folder without having to wait for an AMI to build and a bunch of EC2 Instances to boot up.

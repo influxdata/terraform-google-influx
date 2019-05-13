@@ -67,4 +67,4 @@ Deleting certain types of resources (e.g. virtual servers, load balancers) can c
 
 ## Merge and release   
 
-The maintainers for this repo will review your code and provide feedback. If everything looks good, they will merge the code and release a new version, which you'll be able to find in the [releases page](../../releases).
+The maintainers for this repo will review your code and provide feedback. If everything looks good, they will merge the code and release a new version, which you'll be able to find in the [releases page](https://github.com/gruntwork-io/terraform-google-influx/releases).
