@@ -11,7 +11,7 @@ Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](htt
 
 ## Quick start
 
-If you want to quickly spin up an InfluxDB OSS server, you can run the simple example that is in the root of this repo. Check out [influxdb-oss example documentation](examples/influxdb-oss) for instructions.
+If you want to quickly spin up an InfluxDB OSS server, you can run the simple example that is in the root of this repo. Check out [influxdb-oss example documentation](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/influxdb-oss) for instructions.
 
 ## What's in this repo
 
