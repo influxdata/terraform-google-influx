@@ -10,7 +10,7 @@ There is a good chance it will work on other flavors of Debian, CentOS, and RHEL
 ## Quick start
 
 This script assumes you installed influxdb, plus all of its dependencies (including InfluxDB itself), using the 
-[install-influxdb module](../install-influxdb). 
+[install-influxdb module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-influxdb). 
 
 This will:
 
@@ -18,7 +18,7 @@ This will:
 
 1. Start InfluxDB on the local node.
 
-1. Wait for the Meta and Data Instance Groups to spin up all desired instances then update `/etc/hosts` with the IPs of all instances. The value of the instances' `Name` label is used as the `hostname` entry.
+1. Wait for the Meta and Data Instance Groups to spin up all desired instances.
    
 1. Figure out a rally point for your InfluxDB cluster. This is a "leader" Meta node that will be responsible for initializing the cluster. See [Picking a rally point](#picking-a-rally-point) for more info.
    
@@ -26,7 +26,7 @@ This will:
 
 We recommend using the `run-influxdb` command as part of the instance [Startup Script](https://cloud.google.com/compute/docs/startupscript), so that it executes when the Compute Instance is first booting.
 
-See the [examples folder](../../examples) for fully-working sample code.
+See the [examples folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples) for fully-working sample code.
 
 ## Command line Arguments
 
