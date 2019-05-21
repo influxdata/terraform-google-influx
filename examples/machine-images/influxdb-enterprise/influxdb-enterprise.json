@@ -1,14 +1,14 @@
 {
   "min_packer_version": "0.12.0",
   "variables": {
-    "region": "europe-north1",
-    "zone": "europe-north1-a",
-    "version": "1.6.2",
-    "project_id": "{{env `GOOGLE_CLOUD_PROJECT_ID`}}",
+    "region": "us-east1",
+    "zone": "us-east1-a",
+    "version": "1.7.6",
+    "project_id": "{{env `GOOGLE_CLOUD_PROJECT`}}",
     "service_account_json": "{{env `GOOGLE_CREDENTIALS`}}"
   },
   "builders": [{
-    "name": "influxdb-gcp-ubuntu",
+    "name": "gcp",
     "type": "googlecompute",
     "project_id": "{{user `project_id`}}",
     "machine_type": "n1-standard-1",
@@ -16,15 +16,10 @@
     "region": "{{user `region`}}",
     "zone": "{{user `zone`}}",
     "image_description": "An Ubuntu 18.04 AMI that has InfluxDB Enterprise installed.",
-    "image_name": "influxdb-ubuntu-{{uuid | clean_image_name}}",
-    "image_family": "influxdb-ubuntu-example",
+    "image_name": "influxdb-ubuntu-ent-{{uuid | clean_image_name}}",
+    "image_family": "influxdb-ubuntu-ent-example",
     "account_file": "{{ user `service_account_json`}}",
     "ssh_username": "ubuntu"
-  },{
-    "name": "influxdb-docker-ubuntu",
-    "type": "docker",
-    "image": "ubuntu:18.04",
-    "commit": "true"
   }],
   "provisioners": [{
     "type": "shell",
@@ -32,15 +27,7 @@
     "inline": [
       "DEBIAN_FRONTEND=noninteractive sudo apt-get update -y",
       "sudo apt-get install -y jq google-cloud-sdk"
-    ],
-    "only": ["influxdb-gcp-ubuntu"]
-  },{
-    "type": "shell",
-    "inline": [
-      "DEBIAN_FRONTEND=noninteractive apt-get update -y",
-      "apt-get install -y sudo wget git jq systemd"
-    ],
-    "only": ["influxdb-docker-ubuntu"]
+    ]
   },{
     "type": "shell",
     "inline": [
@@ -55,18 +42,12 @@
     "destination": "/tmp"
   },{
     "type": "file",
-    "source": "{{template_dir}}/../../modules/",
+    "source": "{{template_dir}}/../../../modules/",
     "destination": "/tmp/terraform-google-influx/modules"
   },{
     "type": "shell",
     "inline": [
-      "/tmp/terraform-google-influx/modules/install-influxdb/install-influxdb --version {{user `version`}}"
+      "/tmp/terraform-google-influx/modules/install-influxdb/install-influxdb --distribution enterprise --version {{user `version`}}"
     ]
-  }],
-  "post-processors": [{
-    "type": "docker-tag",
-    "repository": "gruntwork/influxdb-gcp-ubuntu",
-    "tag": "latest",
-    "only": ["influxdb-docker-ubuntu"]
   }]
 }

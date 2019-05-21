@@ -10,7 +10,7 @@ To build the InfluxDB Image:
 1. Install [Packer](https://www.packer.io/).
 1. Configure your GCP credentials:
    1. Set `GOOGLE_CREDENTIALS` environment variable to local path of your Google Cloud Platform account credentials in JSON format.
-   1. Set `GOOGLE_CLOUD_PROJECT_ID` environment variable to your GCP Project ID.
+   1. Set `GOOGLE_CLOUD_PROJECT` environment variable to your GCP Project ID.
 1. Update the `variables` section of the `influxdb.json` Packer template to specify the GCP region and zone, and InfluxDB version you wish to use.
 1. To build an Ubuntu image for InfluxDB Enterprise: `packer build -only=influxdb-gcp-ubuntu influxdb.json`.
 
