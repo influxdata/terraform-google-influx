@@ -74,7 +74,7 @@ resource "google_compute_instance_template" "default" {
 # PREPARE LOCALS
 #
 # NOTE: Due to limitations in terraform and heavy use of nested sub-blocks in the resource,
-# we have to construct some of the configuration values dynamically
+# we have to construct some of the configuration values dynamically.
 # ------------------------------------------------------------------------------
 
 locals {
