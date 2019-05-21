@@ -68,7 +68,7 @@ module "service_account" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "vpc_network" {
-  source = "git::https://github.com/gruntwork-io/terraform-google-network.git//modules/vpc-network?ref=v0.0.2"
+  source = "git::https://github.com/gruntwork-io/terraform-google-network.git//modules/vpc-network?ref=v0.1.1"
 
   name    = "${var.cluster_name}"
   project = "${var.project}"
