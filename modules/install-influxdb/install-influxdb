@@ -123,7 +123,7 @@ function install_influxdb {
         ;;
       --distribution)
         assert_not_empty "$key" "$2"
-        version="$2"
+        distribution="$2"
         shift
         ;;
       --oss-config-file)
