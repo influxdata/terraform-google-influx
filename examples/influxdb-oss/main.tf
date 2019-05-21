@@ -81,7 +81,7 @@ module "vpc_network" {
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE INTERNAL LOAD BALANCER
 #
-# NOTE: The internal load balancer is not accessible from the internet
+# NOTE: The internal load balancer is not accessible from the public internet
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "load_balancer" {
