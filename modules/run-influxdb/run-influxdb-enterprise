@@ -7,6 +7,7 @@ readonly BASH_COMMONS_DIR="/opt/gruntwork/bash-commons"
 readonly INFLUXDB_COMMONS_DIR="/opt/influxdb-commons"
 readonly DEFAULT_META_CONFIG_FILE_PATH="/etc/influxdb/influxdb-meta.conf"
 readonly DEFAULT_DATA_CONFIG_FILE_PATH="/etc/influxdb/influxdb.conf"
+readonly DEFAULT_OSS_CONFIG_FILE_PATH="/etc/influxdb/influxdb.conf"
 readonly MAX_RETRIES=60
 readonly SLEEP_BETWEEN_RETRIES_SEC=5
 
@@ -17,14 +18,14 @@ fi
 
 if [[ ! -d "$INFLUXDB_COMMONS_DIR" ]]; then
   echo "ERROR: this script requires that influxdb-commons is installed in $INFLUXDB_COMMONS_DIR."
-  #exit 1
+  exit 1
 fi
 
-#source "$BASH_COMMONS_DIR/assert.sh"
-#source "$BASH_COMMONS_DIR/file.sh"
-#source "$BASH_COMMONS_DIR/log.sh"
+source "$BASH_COMMONS_DIR/assert.sh"
+source "$BASH_COMMONS_DIR/file.sh"
+source "$BASH_COMMONS_DIR/log.sh"
 
-#source "$INFLUXDB_COMMONS_DIR/influxdb-common.sh"
+source "$INFLUXDB_COMMONS_DIR/influxdb-common.sh"
 
 function print_usage {
   echo

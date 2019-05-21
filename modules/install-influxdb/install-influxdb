@@ -6,12 +6,15 @@ set -e
 readonly BASH_COMMONS_DIR="/opt/gruntwork/bash-commons"
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-readonly DEFAULT_INFLUXDB_VERSION="1.6.2"
+readonly DEFAULT_INFLUXDB_VERSION="1.7.6"
+readonly DEFAULT_INFLUXDB_DISTRIBUTION="oss"
 
 readonly DEFAULT_TEMP_META_CONFIG_FILE_PATH="/tmp/config/influxdb-meta.conf"
 readonly DEFAULT_TEMP_DATA_CONFIG_FILE_PATH="/tmp/config/influxdb.conf"
+readonly DEFAULT_TEMP_OSS_CONFIG_FILE_PATH="/tmp/config/influxdb.conf"
 readonly DEFAULT_META_CONFIG_FILE_PATH="/etc/influxdb/influxdb-meta.conf"
 readonly DEFAULT_DATA_CONFIG_FILE_PATH="/etc/influxdb/influxdb.conf"
+readonly DEFAULT_OSS_CONFIG_FILE_PATH="/etc/influxdb/influxdb.conf"
 
 readonly DEFAULT_INFLUXDB_DIR="/opt/influxdb"
 readonly DEFAULT_INFLUXDB_BIN_DIR="$DEFAULT_INFLUXDB_DIR/bin"
@@ -36,17 +39,20 @@ function print_usage {
   echo
   echo "Options:"
   echo
+  echo -e "  --distribution\tThe distribution of InfluxDB (oss/enterprise) to install. Default: $DEFAULT_INFLUXDB_DISTRIBUTION."
   echo -e "  --version\t\tThe version of InfluxDB Enterprise to install. Default: $DEFAULT_INFLUXDB_VERSION."
-  echo -e "  --meta-config-file\tPath to a templated meta node configuration file. Default: $DEFAULT_TEMP_META_CONFIG_FILE_PATH"
-  echo -e "  --data-config-file\tPath to a templated data node configuration file. Default: $DEFAULT_TEMP_DATA_CONFIG_FILE_PATH"
+  echo -e "  --oss-config-file\tPath to a templated oss configuration file. Used for oss distribution. Default: $DEFAULT_TEMP_OSS_CONFIG_FILE_PATH"
+  echo -e "  --meta-config-file\tPath to a templated meta node configuration file. Used for enterprise distribution. Default: $DEFAULT_TEMP_META_CONFIG_FILE_PATH"
+  echo -e "  --data-config-file\tPath to a templated data node configuration file. Used for enterprise distribution. Default: $DEFAULT_TEMP_DATA_CONFIG_FILE_PATH"
 
   echo
-  echo "Example:"
+  echo "Examples:"
   echo
-  echo "  install-influxdb  --version $DEFAULT_INFLUXDB_VERSION --meta-config-file $DEFAULT_TEMP_META_CONFIG_FILE_PATH --data-config-file $DEFAULT_TEMP_DATA_CONFIG_FILE_PATH"
+  echo "  install-influxdb  --version $DEFAULT_INFLUXDB_VERSION --distribution enterprise --meta-config-file $DEFAULT_TEMP_META_CONFIG_FILE_PATH --data-config-file $DEFAULT_TEMP_DATA_CONFIG_FILE_PATH"
+  echo "  install-influxdb  --version $DEFAULT_INFLUXDB_VERSION --oss-config-file $DEFAULT_TEMP_OSS_CONFIG_FILE_PATH"
 }
 
-function install_influxdb_on_ubuntu {
+function install_influxdb_enterpise_on_ubuntu {
   local -r version="$1"
 
   log_info "Installing InfluxDB Enterprise Meta service"
@@ -58,11 +64,29 @@ function install_influxdb_on_ubuntu {
   sudo dpkg -i "influxdb-data_${version}-c${version}_amd64.deb"
 }
 
+function install_influxdb_oss_on_ubuntu {
+  local -r version="$1"
+
+  log_info "Installing InfluxDB OSS"
+  sudo wget "https://dl.influxdata.com/influxdb/releases/influxdb_${version}_amd64.deb"
+  sudo dpkg -i "influxdb_${version}_amd64.deb"
+}
+
 function install_influxdb_scripts {
   local -r dest_dir="$1"
+  local -r distribution="$2"
 
-  local -r run_influxdb_src="$SCRIPT_DIR/../run-influxdb/run-influxdb"
-  local -r run_influxdb_dest="$dest_dir/run-influxdb"
+  local run_script=""
+
+  if [[ "$distribution" == "oss" ]]; then
+    run_script="run-influxdb-oss"
+  else
+    run_script="run-influxdb-enterprise"
+  fi
+
+
+  local -r run_influxdb_src="$SCRIPT_DIR/../run-influxdb/$run_script"
+  local -r run_influxdb_dest="$dest_dir/$run_script"
 
   log_info "Copying $run_influxdb_src to $run_influxdb_dest"
   sudo mkdir -p "$dest_dir"
@@ -79,8 +103,10 @@ function install_influxdb_commons {
 
 function install_influxdb {
   local version="$DEFAULT_INFLUXDB_VERSION"
+  local distribution="$DEFAULT_INFLUXDB_DISTRIBUTION"
   local meta_config_file="$DEFAULT_TEMP_META_CONFIG_FILE_PATH"
   local data_config_file="$DEFAULT_TEMP_DATA_CONFIG_FILE_PATH"
+  local oss_config_file="$DEFAULT_TEMP_OSS_CONFIG_FILE_PATH"
 
   while [[ $# > 0 ]]; do
     local key="$1"
@@ -93,6 +119,16 @@ function install_influxdb {
       --version)
         assert_not_empty "$key" "$2"
         version="$2"
+        shift
+        ;;
+      --distribution)
+        assert_not_empty "$key" "$2"
+        version="$2"
+        shift
+        ;;
+      --oss-config-file)
+        assert_not_empty "$key" "$2"
+        oss_config_file="$2"
         shift
         ;;
       --meta-config-file)
@@ -118,19 +154,28 @@ function install_influxdb {
   assert_is_installed "sudo"
   assert_is_installed "wget"
 
-  install_influxdb_on_ubuntu "$version"
+  assert_value_in_list "--distribution" "$distribution" "oss" "enterprise"
 
-  sudo mv "$meta_config_file" "$DEFAULT_META_CONFIG_FILE_PATH"
-  sudo mv "$data_config_file" "$DEFAULT_DATA_CONFIG_FILE_PATH"
-
-  # Change owner of configuration files to influxdb user
-  sudo chown -R influxdb:influxdb "$(dirname "${DEFAULT_META_CONFIG_FILE_PATH}")"
+  # Install either oss or enterprise version
+  if [[ "$distribution" == "oss" ]]; then
+    install_influxdb_oss_on_ubuntu "$version"
+    sudo mv "$oss_config_file" "$DEFAULT_OSS_CONFIG_FILE_PATH"
+    # Change owner of configuration files to influxdb user
+    sudo chown -R influxdb:influxdb "$(dirname "${DEFAULT_OSS_CONFIG_FILE_PATH}")"
+  else
+    install_influxdb_enterpise_on_ubuntu "$version"
+    sudo mv "$meta_config_file" "$DEFAULT_META_CONFIG_FILE_PATH"
+    sudo mv "$data_config_file" "$DEFAULT_DATA_CONFIG_FILE_PATH"
+    # Change owner of configuration files to influxdb user
+    sudo chown -R influxdb:influxdb "$(dirname "${DEFAULT_META_CONFIG_FILE_PATH}")"
+    # Meta service is only installed with enterprise distribution
+    sudo systemctl disable influxdb-meta.service
+  fi
 
   # Disable the installed systemd services to prevent them from starting up on boot
-  sudo systemctl disable influxdb-meta.service
   sudo systemctl disable influxdb.service
 
-  install_influxdb_scripts "$DEFAULT_INFLUXDB_BIN_DIR"
+  install_influxdb_scripts "$DEFAULT_INFLUXDB_BIN_DIR" "$distribution"
   install_influxdb_commons "$INFLUXDB_COMMONS_SRC_DIR" "$INFLUXDB_COMMONS_INSTALL_DIR"
 }
 

@@ -40,7 +40,7 @@ function format_and_mount_disk() {
   esac
 
   # Try to mount disk after formatted it.
-  log_info "Mount disk '${disk_name}'"
+  log_info "Mount disk '${disk_path}'"
   mount -o discard,defaults -t "${filesystem}" "${disk_path}" "${mount_dir}"
 
   # Add an entry to /etc/fstab to mount the disk on restart.
