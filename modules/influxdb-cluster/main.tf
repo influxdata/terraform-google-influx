@@ -78,7 +78,7 @@ resource "google_compute_instance_template" "default" {
 # ------------------------------------------------------------------------------
 
 locals {
-  # Terraform does not allow using lists of maps with coditionals, so we have to
+  # Terraform does not allow using lists of maps with conditionals, so we have to
   # trick terraform by creating a string conditional first.
   # See https://github.com/hashicorp/terraform/issues/12453
   network_interface_key = "${var.allow_public_access == "true" ? "PUBLIC" : "PRIVATE"}"
