@@ -173,6 +173,8 @@ function install_influxdb {
   fi
 
   # Disable the installed systemd services to prevent them from starting up on boot
+  # We're re-enabling the service as part of the startup script, where we fill in proper configuration
+  # values and register the nodes in the cluster
   sudo systemctl disable influxdb.service
 
   install_influxdb_scripts "$DEFAULT_INFLUXDB_BIN_DIR" "$distribution"

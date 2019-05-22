@@ -78,11 +78,11 @@ resource "google_compute_instance_template" "default" {
 # PREPARE LOCALS
 #
 # NOTE: Due to limitations in terraform and heavy use of nested sub-blocks in the resource,
-# we have to construct some of the configuration values dynamically
+# we have to construct some of the configuration values dynamically.
 # ------------------------------------------------------------------------------
 
 locals {
-  # Terraform does not allow using lists of maps with coditionals, so we have to
+  # Terraform does not allow using lists of maps with conditionals, so we have to
   # trick terraform by creating a string conditional first.
   # See https://github.com/hashicorp/terraform/issues/12453
   network_interface_key = "${var.allow_public_access == "true" ? "PUBLIC" : "PRIVATE"}"

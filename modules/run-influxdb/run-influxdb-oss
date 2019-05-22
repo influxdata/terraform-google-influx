@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# This script configures and starts a pre-installed InfluxDB OSS server.
+# You can pass in values to be filled in the InfluxDB configuration file
 
 set -e
 

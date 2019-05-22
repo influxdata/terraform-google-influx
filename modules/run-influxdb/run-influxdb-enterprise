@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+# This script configures and starts a pre-installed InfluxDB Enterprise server. The script assumes you have installed
+# the enterprise binaries with the ´install-influxdb´ -module. Depending on input parameters, the script will either
+# enable the meta or the data service. You can pass in values to be filled in the InfluxDB configuration file
+#
+# For InfluxDB enterprise, we need to determine the rally point for the cluster, where all the nodes register.
+# This is done querying the GCP API with `gcloud` command for the alphabetically first instance id in the managed
+# instance group.
 
 set -e
 
@@ -29,7 +36,7 @@ source "$INFLUXDB_COMMONS_DIR/influxdb-common.sh"
 
 function print_usage {
   echo
-  echo "Usage: run-influxdb [options]"
+  echo "Usage: run-influxdb-enterprise [options]"
   echo
   echo "This script can be used to configure and initialize InfluxDB. This script has been tested with Ubuntu 18.04."
   echo
@@ -46,7 +53,7 @@ function print_usage {
   echo
   echo "Example:"
   echo
-  echo "  run-influxdb  --node-type meta --meta-group-name group-meta --data-group-name group-data --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'"
+  echo "  run-influxdb-enterprise  --node-type meta --meta-group-name group-meta --data-group-name group-data --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'"
 }
 
 function get_rally_point_ip {
