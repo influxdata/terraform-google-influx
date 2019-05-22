@@ -56,11 +56,7 @@ quite unnecessary for single instance InfluxDB OSS deployments.
 
 ## How do you connect to the InfluxDB cluster?
 
-While InfluxDB doesn't use a load balancer for intra-cluster communication, one can be optionally setup to communicate
-with a data cluster from the outside world. A [Network Load Balancer](https://cloud.google.com/load-balancing/docs/network/) 
-can be deployed in front of the cluster and you can use the [InfluxDB CLI](https://docs.influxdata.com/influxdb/v1.6/tools/shell/)
-to connect to the load balancer on port `8086`. Alternatively, you can use the [InfluxDB SDK](https://docs.influxdata.com/influxdb/v1.6/tools/api_client_libraries/) 
-for your programming language of choice.
+While InfluxDB doesn't use a load balancer for intra-cluster communication, one can be optionally setup to communicate with a data cluster. A [Network Load Balancer](https://cloud.google.com/load-balancing/docs/network/) can be deployed in front of the cluster and you can use the [InfluxDB CLI](https://docs.influxdata.com/influxdb/v1.6/tools/shell/) to connect to the load balancer on port `8086`. Alternatively, you can use the [InfluxDB SDK](https://docs.influxdata.com/influxdb/v1.6/tools/api_client_libraries/) for your programming language of choice.
 
 ## What's included in this module?
 
@@ -139,6 +135,7 @@ This module attaches a security group to each EC2 Instance that allows inbound r
   the `allowed_inbound_ssh_security_group_ids` parameter to control the list of source Security Groups that will be 
   allowed access.
   
+
 The ID of the security group is exported as an output variable, which you can use with the 
 [influxdb-security-group-rules](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-security-group-rules)
 module to open up all the ports necessary for InfluxDB.
