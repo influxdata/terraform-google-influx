@@ -1,6 +1,6 @@
 # InfluxDB Run Scripts
 
-This folder contains scripts for configuring and initializing InfluxDB on a [GCP](https://cloud.google.com/gcp/) server instance. 
+This folder contains scripts for configuring and initializing InfluxDB on a [GCP](https://cloud.google.com/gcp/) compute instance. 
 There are two scripts and you should only invoke one of them depending on the installed InfluxDB distribution:
 
 * `run-influxdb-enterprise`: If you installed the enterprise version, use this script.

@@ -47,7 +47,7 @@ module "influxdb_oss" {
   // We're tagging the instances with the 'public' tag. See the Access Tier documentation for details:
   // https://github.com/gruntwork-io/terraform-google-network/tree/master/modules/vpc-network#access-tier
   // NOTE: This is *NOT* recommended for production, as it makes the InfluxDB instances accessible from
-  // the public internet. For production setup, we recommend using ´private_persistence´ or ´private´ network tag.
+  // the public internet. For a production setup, we recommend using ´private_persistence´ or ´private´ network tag.
   custom_tags = ["${module.vpc_network.public}"]
 }
 
@@ -81,7 +81,7 @@ module "vpc_network" {
 # ---------------------------------------------------------------------------------------------------------------------
 # CREATE INTERNAL LOAD BALANCER
 #
-# NOTE: The internal load balancer is not accessible from the internet
+# NOTE: The internal load balancer is not accessible from the public internet
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "load_balancer" {
