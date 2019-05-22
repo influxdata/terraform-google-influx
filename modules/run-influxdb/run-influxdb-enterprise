@@ -36,7 +36,7 @@ source "$INFLUXDB_COMMONS_DIR/influxdb-common.sh"
 
 function print_usage {
   echo
-  echo "Usage: run-influxdb [options]"
+  echo "Usage: run-influxdb-enterprise [options]"
   echo
   echo "This script can be used to configure and initialize InfluxDB. This script has been tested with Ubuntu 18.04."
   echo
@@ -53,7 +53,7 @@ function print_usage {
   echo
   echo "Example:"
   echo
-  echo "  run-influxdb  --node-type meta --meta-group-name group-meta --data-group-name group-data --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'"
+  echo "  run-influxdb-enterprise  --node-type meta --meta-group-name group-meta --data-group-name group-data --region europe-north1 --auto-fill '<__LICENSE_KEY__>=******'"
 }
 
 function get_rally_point_ip {
