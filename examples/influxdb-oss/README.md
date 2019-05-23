@@ -1,6 +1,6 @@
 # InfluxDB OSS Example
 
-The root folder of this repo shows an example of Terraform code that uses the [influxdb-cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster) module to deploy a [InfluxDB OSS](https://www.influxdata.com/products/influxdb-overview/) single node cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group with a single compute instance that runs InfluxDB.
+This folder shows an example of Terraform code that uses the [influxdb-cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster) module to deploy a [InfluxDB OSS](https://www.influxdata.com/products/influxdb-overview/) single node cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group with a single compute instance that runs InfluxDB.
 
 This example also deploys an Internal TCP Load Balancer in front of the InfluxDB cluster. Note that as the load balancer is internal, it is not accessible from the public internet. 
 
@@ -16,9 +16,9 @@ To deploy InfluxDB OSS:
 1. `git clone` this repo to your computer.
 1. Build a custom InfluxDB OSS image. See the [influxdb-oss machine image example](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/machine-images/influxdb-oss) documentation for instructions. Make sure to note down the ID of the image.
 1. Install [Terraform](https://www.terraform.io/).
-1. Open the `variables.tf` file in the root of this repo, set the environment variables specified at the top of the file, and fill in any other variables that don't have a default. Put the custom image ID into the `image` variable.
-1. Run `terraform init` in the root folder of this repo.
-1. Run `terraform apply` in the root folder of this repo.
+1. Open the `variables.tf`, set the environment variables specified at the top of the file, and fill in any other variables that don't have a default. Put the custom image ID into the `image` variable.
+1. Run `terraform init`
+1. Run `terraform apply`
 
 ## Connecting to the cluster
 

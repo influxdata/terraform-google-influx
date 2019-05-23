@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"strings"
 	"testing"
 	"time"
@@ -47,13 +49,22 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 	return packer.BuildArtifact(t, options)
 }
 
-func getInfluxDBDataNodePublicIP(t *testing.T, projectID string, region string, igSelfLink string) string {
-	nameArr := strings.Split(igSelfLink, "/")
-	name := nameArr[len(nameArr)-1]
-	instanceGroup := gcp.FetchRegionalInstanceGroup(t, projectID, region, name)
-	instances := instanceGroup.GetInstances(t, projectID)
+func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
+	projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+	instanceGroup := getInstanceGroup(t, exampleDir, outputName)
+	instances := instanceGroup.GetInstances(t, projectId)
 	instance := instances[0]
 	return instance.GetPublicIp(t)
+}
+
+func getInstanceGroup(t *testing.T, exampleDir string, outputName string) *gcp.RegionalInstanceGroup {
+	region := test_structure.LoadString(t, exampleDir, KEY_REGION)
+	projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+	terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+	igSelfLink := terraform.Output(t, terraformOptions, outputName)
+	nameArr := strings.Split(igSelfLink, "/")
+	name := nameArr[len(nameArr)-1]
+	return gcp.FetchRegionalInstanceGroup(t, projectId, region, name)
 }
 
 func validateInfluxdb(t *testing.T, endpoint string, port string) {
