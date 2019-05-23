@@ -26,9 +26,10 @@ As the example deploys an internal load balancer that cannot be reached from out
 
 You can get the public IP address using one of the following methods:
 
-* Login to [GCP Console](https://console.cloud.google.com/), go to the VM instances page and locate the instance and its public IP address
-* Make note of the `influxdb_instance_group_manager` output and run the following commands:
-  * `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances [YOUR INSTANCE GROUP MANAGER SELF LINK] --limit=1 --uri)`
+1. Login to [GCP Console](https://console.cloud.google.com/), go to the VM instances page and locate the instance and its public IP address
+2. Run the following commands in the root folder of this repo:
+  * `IGM=$(terraform output influxdb_instance_group_manager | tr -d '\n')`
+  * `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances $IGM --limit=1 --uri)`
   * `gcloud compute instances describe $INSTANCE_URI --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`
 
 Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
