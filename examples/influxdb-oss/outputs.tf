@@ -4,6 +4,6 @@ output "influxdb_instance_group" {
 }
 
 output "influxdb_instance_group_manager" {
-  description = "Name of the InfluxDB instance group"
+  description = "Self link of the InfluxDB instance group"
   value       = "${module.influxdb_oss.instance_group_manager}"
 }
