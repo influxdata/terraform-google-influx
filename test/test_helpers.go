@@ -2,6 +2,7 @@ package test
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -50,11 +51,25 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 }
 
 func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
-	projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-	instanceGroup := getInstanceGroup(t, exampleDir, outputName)
-	instances := instanceGroup.GetInstances(t, projectId)
-	instance := instances[0]
-	return instance.GetPublicIp(t)
+	maxRetries := 15
+	sleepBetweenRetries := 5 * time.Second
+
+	publicIp, err := retry.DoWithRetryE(t, "Get public IP for a Data instance", maxRetries, sleepBetweenRetries, func() (string, error) {
+		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+		instanceGroup := getInstanceGroup(t, exampleDir, outputName)
+		instances := instanceGroup.GetInstances(t, projectId)
+
+		if instances == nil || len(instances) == 0 {
+			return "", errors.New("Could not find instances")
+		}
+
+		instance := instances[0]
+		return instance.GetPublicIp(t), nil
+	})
+
+	require.NoError(t, err, "Could not find public IP for %s: %s", outputName, err.Error())
+
+	return publicIp
 }
 
 func getInstanceGroup(t *testing.T, exampleDir string, outputName string) *gcp.RegionalInstanceGroup {
