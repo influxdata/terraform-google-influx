@@ -38,6 +38,9 @@ module "influxdb_oss" {
   network          = "${module.vpc_network.network}"
   subnetwork       = "${module.vpc_network.public_subnetwork}"
 
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
   // For the sake of testing we're assigning public IPs to the node
   allow_public_access = "true"
 

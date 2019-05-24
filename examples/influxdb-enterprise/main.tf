@@ -45,6 +45,9 @@ module "influxdb_data" {
   network          = "${module.vpc_network.network}"
   subnetwork       = "${module.vpc_network.public_subnetwork}"
 
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
   // To make testing easier, we're assigning public IPs to the node
   allow_public_access = "true"
 
@@ -94,6 +97,9 @@ module "influxdb_meta" {
   cluster_size     = "3"
   network          = "${module.vpc_network.network}"
   subnetwork       = "${module.vpc_network.public_subnetwork}"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
 
   // To make testing easier, we're assigning public IPs to the node
   allow_public_access = "true"
