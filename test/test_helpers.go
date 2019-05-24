@@ -57,6 +57,7 @@ func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName str
 	publicIp, err := retry.DoWithRetryE(t, "Get public IP for a Data instance", maxRetries, sleepBetweenRetries, func() (string, error) {
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 		instanceGroup := getInstanceGroup(t, exampleDir, outputName)
+
 		instances := instanceGroup.GetInstances(t, projectId)
 
 		if instances == nil || len(instances) == 0 {
@@ -64,11 +65,13 @@ func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName str
 		}
 
 		instance := instances[0]
-		return instance.GetPublicIp(t), nil
+		publicIP := instance.GetPublicIp(t)
+		logger.Logf(t, "Public IP found: %v", publicIP)
+
+		return publicIP, nil
 	})
 
-	require.NoError(t, err, "Could not find public IP for %s: %s", outputName, err.Error())
-
+	require.NoError(t, err, "Could not find public IP")
 	return publicIp
 }
 
@@ -108,7 +111,7 @@ func validateInfluxdb(t *testing.T, endpoint string, port string) {
 		})
 
 		if err != nil {
-			t.Logf("Query failed: %s", err.Error())
+			logger.Logf(t, "Query failed: %s", err.Error())
 			return "", err
 		}
 
