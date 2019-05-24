@@ -21,6 +21,8 @@ To deploy InfluxDB Enterprise Cluster:
 
 As the example deploys an internal load balancer that cannot be reached from outside the created network, we have made testing easier by assigning a public IP address to the InfluxDB nodes. 
 
+Note that assigning a public IP for your InfluxDB nodes is _not_ recommended. 
+
 You can get the public IP address of one of the Data nodes using one of the following methods:
 
 1. Login to [GCP Console](https://console.cloud.google.com/), go to the VM instances page and locate the instance and its public IP address
