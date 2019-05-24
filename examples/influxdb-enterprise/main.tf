@@ -160,7 +160,7 @@ module "vpc_network" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "load_balancer" {
-  source = "git::https://github.com/gruntwork-io/terraform-google-load-balancer.git//modules/internal-load-balancer?ref=internal_lb"
+  source = "git::https://github.com/gruntwork-io/terraform-google-load-balancer.git//modules/internal-load-balancer?ref=v0.1.2"
 
   project = "${var.project}"
 
