@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE A SERVICE ACCOUNT WITH SUFFICIENT ROLES TO RUN THE CLUSTER
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "google_service_account" "service_account" {
   project      = "${var.project}"
   account_id   = "${var.name}"
