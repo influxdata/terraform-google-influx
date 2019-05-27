@@ -15,35 +15,50 @@ import (
 	"github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
-const EXAMPLE_NAME_INFLUXDB_OSS = "influxdb-oss"
+const EXAMPLE_DIR_INFLUXDB_OSS = "influxdb-oss"
+const EXAMPLE_DIR_INFLUXDB_ENTERPRISE = "influxdb-enterprise"
 
-func TestInfluxDBOSS(t *testing.T) {
+func TestInfluxDBClusters(t *testing.T) {
 	t.Parallel()
 
 	// For convenience - uncomment these as well as the "os" import
 	// when doing local testing if you need to skip any sections.
 	// os.Setenv("SKIP_", "true")
-	//os.Setenv("SKIP_bootstrap", "true")
-	//os.Setenv("SKIP_build_image", "true")
-	//os.Setenv("SKIP_deploy", "true")
-	//os.Setenv("SKIP_validate", "true")
-	//os.Setenv("SKIP_teardown", "true")
+	// os.Setenv("SKIP_bootstrap", "true")
+	// os.Setenv("SKIP_build_image", "true")
+	// os.Setenv("SKIP_deploy", "true")
+	// os.Setenv("SKIP_validate", "true")
+	// os.Setenv("SKIP_teardown", "true")
 
 	// Keeping the testcases struct, even though we're only running a single test
 
 	var testcases = []struct {
 		testName      string
+		testDir       string
+		igOutput      string
 		packerInfo    PackerInfo
 		isEnterprise  bool
 		sleepDuration int
 	}{
 		{
 			"TestInfluxDBOSS",
+			EXAMPLE_DIR_INFLUXDB_OSS,
+			"influxdb_instance_group",
 			PackerInfo{
 				builderName:  "gcp",
 				templatePath: "influxdb-oss/influxdb-oss.json"},
 			false,
 			0,
+		},
+		{
+			"TestInfluxDBEnterprise",
+			EXAMPLE_DIR_INFLUXDB_ENTERPRISE,
+			"influxdb_data_instance_group",
+			PackerInfo{
+				builderName:  "gcp",
+				templatePath: "influxdb-enterprise/influxdb-enterprise.json"},
+			true,
+			4,
 		},
 	}
 
@@ -60,7 +75,7 @@ func TestInfluxDBOSS(t *testing.T) {
 			time.Sleep(time.Duration(testCase.sleepDuration) * time.Second)
 
 			_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
-			exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_INFLUXDB_OSS)
+			exampleDir := filepath.Join(_examplesDir, testCase.testDir)
 
 			test_structure.RunTestStage(t, "bootstrap", func() {
 				projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
@@ -91,7 +106,12 @@ func TestInfluxDBOSS(t *testing.T) {
 
 				imageID := buildImage(t, templatePath, testCase.packerInfo.builderName, projectId, region, zone)
 
-				clusterName := fmt.Sprintf("influxdb-oss-%s", randomId)
+				baseName := "influxdb-oss"
+				if testCase.isEnterprise {
+					baseName = "influxdb-ent"
+				}
+
+				clusterName := fmt.Sprintf("%s-%s", baseName, randomId)
 
 				licenseKey := os.Getenv("LICENSE_KEY")
 				sharedSecret := os.Getenv("SHARED_SECRET")
@@ -124,13 +144,7 @@ func TestInfluxDBOSS(t *testing.T) {
 			})
 
 			test_structure.RunTestStage(t, "validate", func() {
-				region := test_structure.LoadString(t, exampleDir, KEY_REGION)
-				projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-
-				terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
-				igName := terraform.Output(t, terraformOptions, "influxdb_instance_group")
-
-				publicIP := getInfluxDBDataNodePublicIP(t, projectId, region, igName)
+				publicIP := getInfluxDBDataNodePublicIP(t, exampleDir, testCase.igOutput)
 				port := "8086"
 				validateInfluxdb(t, publicIP, port)
 			})

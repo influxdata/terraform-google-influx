@@ -62,7 +62,11 @@ resource "google_compute_instance_template" "default" {
 
     // NOTE: Access scopes are the legacy method of specifying permissions for your instance.
     // https://cloud.google.com/compute/docs/access/service-accounts#accesscopesiam
-    scopes = []
+    // We're granting the instance the https://www.googleapis.com/auth/cloud-platform scope to allow full access to all
+    // Google Cloud APIs, so that the IAM permissions of the instance are completely determined by the IAM roles
+    // of the service account.
+    // https://cloud.google.com/compute/docs/access/create-enable-service-accounts-for-instances#best_practices
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 
   lifecycle {

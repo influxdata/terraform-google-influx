@@ -2,8 +2,11 @@ package test
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"strings"
 	"testing"
 	"time"
@@ -47,13 +50,39 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 	return packer.BuildArtifact(t, options)
 }
 
-func getInfluxDBDataNodePublicIP(t *testing.T, projectID string, region string, igSelfLink string) string {
+func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
+	maxRetries := 15
+	sleepBetweenRetries := 5 * time.Second
+
+	publicIp, err := retry.DoWithRetryE(t, "Get public IP for a Data instance", maxRetries, sleepBetweenRetries, func() (string, error) {
+		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+		instanceGroup := getInstanceGroup(t, exampleDir, outputName)
+
+		instances := instanceGroup.GetInstances(t, projectId)
+
+		if instances == nil || len(instances) == 0 {
+			return "", errors.New("Could not find instances")
+		}
+
+		instance := instances[0]
+		publicIP := instance.GetPublicIp(t)
+		logger.Logf(t, "Public IP found: %v", publicIP)
+
+		return publicIP, nil
+	})
+
+	require.NoError(t, err, "Could not find public IP")
+	return publicIp
+}
+
+func getInstanceGroup(t *testing.T, exampleDir string, outputName string) *gcp.RegionalInstanceGroup {
+	region := test_structure.LoadString(t, exampleDir, KEY_REGION)
+	projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+	terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+	igSelfLink := terraform.Output(t, terraformOptions, outputName)
 	nameArr := strings.Split(igSelfLink, "/")
 	name := nameArr[len(nameArr)-1]
-	instanceGroup := gcp.FetchRegionalInstanceGroup(t, projectID, region, name)
-	instances := instanceGroup.GetInstances(t, projectID)
-	instance := instances[0]
-	return instance.GetPublicIp(t)
+	return gcp.FetchRegionalInstanceGroup(t, projectId, region, name)
 }
 
 func validateInfluxdb(t *testing.T, endpoint string, port string) {
@@ -82,7 +111,7 @@ func validateInfluxdb(t *testing.T, endpoint string, port string) {
 		})
 
 		if err != nil {
-			t.Logf("Query failed: %s", err.Error())
+			logger.Logf(t, "Query failed: %s", err.Error())
 			return "", err
 		}
 

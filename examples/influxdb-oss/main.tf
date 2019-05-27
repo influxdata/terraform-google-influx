@@ -8,11 +8,13 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 provider "google" {
+  version = "~> 2.7.0"
   region  = "${var.region}"
   project = "${var.project}"
 }
 
 provider "google-beta" {
+  version = "~> 2.7.0"
   region  = "${var.region}"
   project = "${var.project}"
 }
@@ -37,6 +39,9 @@ module "influxdb_oss" {
   cluster_size     = "1"
   network          = "${module.vpc_network.network}"
   subnetwork       = "${module.vpc_network.public_subnetwork}"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
 
   // For the sake of testing we're assigning public IPs to the node
   allow_public_access = "true"
