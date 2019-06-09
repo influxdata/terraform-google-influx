@@ -21,6 +21,8 @@ const EXAMPLE_DIR_INFLUXDB_ENTERPRISE = "influxdb-enterprise"
 func TestInfluxDBClusters(t *testing.T) {
 	t.Parallel()
 
+	t.Skip("Skipping testing during Kapacitor module development")
+
 	// For convenience - uncomment these as well as the "os" import
 	// when doing local testing if you need to skip any sections.
 	// os.Setenv("SKIP_", "true")
