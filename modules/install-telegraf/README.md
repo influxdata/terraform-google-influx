@@ -50,7 +50,7 @@ Options:
 Example:
 
   install-telegraf \
-    --version 1.9.3 \
+    --version 1.9.4 \
     --config-file /tmp/config/telegraf.conf
 ```
 
