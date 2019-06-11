@@ -1,0 +1,46 @@
+{
+  "min_packer_version": "0.12.0",
+  "variables": {
+    "region": "us-east1",
+    "zone": "us-east1-a",
+    "version": "1.5.2",
+    "project_id": "{{env `GOOGLE_CLOUD_PROJECT`}}",
+    "service_account_json": "{{env `GOOGLE_CREDENTIALS`}}"
+  },
+  "builders": [{
+    "name": "gcp",
+    "type": "googlecompute",
+    "project_id": "{{user `project_id`}}",
+    "machine_type": "n1-standard-1",
+    "source_image_family": "ubuntu-1804-lts",
+    "region": "{{user `region`}}",
+    "zone": "{{user `zone`}}",
+    "image_description": "An Ubuntu 18.04 AMI that has Kapacitor installed.",
+    "image_name": "kapacitor-ubuntu-{{uuid | clean_image_name}}",
+    "image_family": "kapacitor-ubuntu-example",
+    "account_file": "{{ user `service_account_json`}}",
+    "ssh_username": "ubuntu"
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "sudo mkdir -p /opt/gruntwork",
+      "git clone --branch v0.1.2 https://github.com/gruntwork-io/bash-commons.git /tmp/bash-commons",
+      "sudo cp -r /tmp/bash-commons/modules/bash-commons/src /opt/gruntwork/bash-commons",
+      "mkdir -p /tmp/terraform-google-influx/modules"
+    ]
+  },{
+    "type": "file",
+    "source": "{{template_dir}}/config",
+    "destination": "/tmp"
+  },{
+    "type": "file",
+    "source": "{{template_dir}}/../../../modules/",
+    "destination": "/tmp/terraform-google-influx/modules"
+  },{
+    "type": "shell",
+    "inline": [
+      "/tmp/terraform-google-influx/modules/install-telegraf/install-telegraf --version {{user `version`}}"
+    ]
+  }]
+}
