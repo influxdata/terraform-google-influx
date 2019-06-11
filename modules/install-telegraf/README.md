@@ -44,7 +44,7 @@ This script can be used to install Telegraf and its dependencies. This script ha
 
 Options:
 
-  --version       The version of Telegraf to install. Default: 1.9.3.
+  --version       The version of Telegraf to install. Default: 1.9.4.
   --config-file   Path to a templated configuration file. Default: /tmp/config/telegraf.conf
 
 Example:
