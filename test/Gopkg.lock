@@ -18,7 +18,7 @@
   version = "v0.35.1"
 
 [[projects]]
-  digest = "1:21a83164dd8f09239b8af76852c9b49be8ddaecfc4165ff8f861f610e71c5b3f"
+  digest = "1:f0faddc6e532999e0d65932b1adcaaedeea97ad8f2234be2301772cf2b340a64"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -32,6 +32,7 @@
     "aws/credentials/endpointcreds",
     "aws/credentials/processcreds",
     "aws/credentials/stscreds",
+    "aws/crr",
     "aws/csm",
     "aws/defaults",
     "aws/ec2metadata",
@@ -59,6 +60,7 @@
     "service/acm",
     "service/autoscaling",
     "service/cloudwatchlogs",
+    "service/dynamodb",
     "service/ec2",
     "service/ecs",
     "service/iam",
@@ -69,6 +71,7 @@
     "service/s3/s3manager",
     "service/sns",
     "service/sqs",
+    "service/ssm",
     "service/sts",
   ]
   pruneopts = "UT"
@@ -228,7 +231,7 @@
   version = "v0.4.2"
 
 [[projects]]
-  digest = "1:ee1b9b5ccfbdfaa09d43a716884626e7a5a65079730eb75db9bd442c1bcf13e2"
+  digest = "1:603f6f7ac9b28f1c2b1e300d8b12e3c25a4bf6e6b4b76ccee37aea877374195f"
   name = "github.com/gruntwork-io/terratest"
   packages = [
     "modules/aws",
@@ -249,8 +252,8 @@
     "modules/test-structure",
   ]
   pruneopts = "UT"
-  revision = "047ce1309355da4d7f778ca7fa61b82606134843"
-  version = "v0.15.2"
+  revision = "f3916f7a5f58e3fedf603388d3e3e8052d6a47a3"
+  version = "v0.16.1"
 
 [[projects]]
   digest = "1:67474f760e9ac3799f740db2c489e6423a4cde45520673ec123ac831ad849cb8"
