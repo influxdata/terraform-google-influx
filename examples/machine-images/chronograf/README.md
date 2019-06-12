@@ -1,6 +1,6 @@
 # Chronograf Image
 
-This folder shows an example of how to use the [install-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-chronograf) modules with [Packer](https://www.packer.io/) to create a [custom image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) for [Compute Engine](https://cloud.google.com/compute/) that have [Kapacitor](https://www.influxdata.com/time-series-platform/kapacitor/), and its dependencies installed on top of Ubuntu 18.04.
+This folder shows an example of how to use the [install-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-chronograf) modules with [Packer](https://www.packer.io/) to create a [custom image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) for [Compute Engine](https://cloud.google.com/compute/) that have [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/), and its dependencies installed on top of Ubuntu 18.04.
 
 Chronograf is the user interface and administrative component of the InfluxDB 1.x platform.
 
