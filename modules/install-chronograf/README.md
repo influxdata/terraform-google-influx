@@ -1,6 +1,6 @@
 # Chronograf Install Script
 
-Chronograf is a complete web-based interface for the entire InfluxData platform.
+[Chronograf](https://www.influxdata.com/time-series-platform/chronograf/) is a complete web-based interface for the entire InfluxData platform.
 This folder contains a script for installing Chronograf and its dependencies.
 
 This script has been tested on the following operating systems:
