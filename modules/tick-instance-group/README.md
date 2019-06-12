@@ -1,6 +1,6 @@
-# Managed Instance Group
+# TICK Instance Group
 
-This folder contains a [Terraform](https://www.terraform.io/) module to deploy a [Managed Instance Group](https://cloud.google.com/compute/docs/instance-groups/#managed_instance_groups) 
+This folder contains a [Terraform](https://www.terraform.io/) module to deploy a [Regional Managed Instance Group](https://cloud.google.com/compute/docs/instance-groups/#managed_instance_groups) 
 in [GCP](https://cloud.google.com/). The module is used to create Managed Instance Groups for InfluxDB, Kapacitor and Chronograf.
 
 ## How do you use this module?

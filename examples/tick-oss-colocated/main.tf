@@ -24,13 +24,12 @@ provider "google-beta" {
 # As we're running the OSS version, this is a single-node cluster
 # ---------------------------------------------------------------------------------------------------------------------
 
-module "influxdb_oss" {
+module "tick_oss" {
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
   region  = "${var.region}"
 
-  // Size of an OSS setup is always 1
   size = 1
 
   data_volume_size        = 50
@@ -40,12 +39,13 @@ module "influxdb_oss" {
   machine_type            = "${var.machine_type}"
   image                   = "${var.image}"
   startup_script          = "${data.template_file.startup_script.rendered}"
-  network                 = "default"
+
+  network = "default"
 
   // For the example, we want to delete the data volume on 'terraform destroy'
   data_volume_auto_delete = "true"
 
-  // To make testing easier, we're assigning public IPs to the node and allowing traffic from all IP addresses
+  // To make testing easier, we're assigning public IPs to the node
   assign_public_ip = "true"
 
   // Use the custom InfluxDB SA
@@ -61,7 +61,7 @@ module "service_account" {
 
   project      = "${var.project}"
   name         = "${var.name}-sa"
-  display_name = "Service Account for InfluxDB OSS Server ${var.name}"
+  display_name = "Service Account for TICK OSS Cluster ${var.name}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -75,9 +75,31 @@ module "influxdb_firewall" {
   name_prefix = "${var.name}"
   network     = "default"
   project     = "${var.project}"
-  target_tags = ["${module.influxdb_oss.network_tag}"]
+  target_tags = ["${module.tick_oss.network_tag}"]
 
   allow_api_access_from_cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "kapacitor_firewall" {
+  source = "../../modules/kapacitor-firewall-rules"
+
+  name_prefix = "${var.name}"
+  network     = "default"
+  project     = "${var.project}"
+  target_tags = ["${module.tick_oss.network_tag}"]
+
+  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "chronograf_firewall" {
+  source = "../../modules/chronograf-firewall-rules"
+
+  name_prefix = "${var.name}"
+  network     = "default"
+  project     = "${var.project}"
+  target_tags = ["${module.tick_oss.network_tag}"]
+
+  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -88,7 +110,12 @@ data "template_file" "startup_script" {
   template = "${file("${path.module}/startup-script.sh")}"
 
   vars {
-    disk_mount_point = "/influxdb"
-    disk_owner       = "influxdb"
+    disk_mount_point   = "/influxdb"
+    disk_owner         = "influxdb"
+    influxdb_url       = "http://localhost:8086"
+    telegraf_database  = "telegraf"
+    chronograf_host    = "0.0.0.0"
+    chronograf_port    = "8888"
+    kapacitor_hostname = "localhost"
   }
 }

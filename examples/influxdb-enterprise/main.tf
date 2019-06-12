@@ -32,35 +32,30 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_data" {
-  source = "../../modules/influxdb-cluster"
+  source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
   region  = "${var.region}"
 
-  data_volume_size = 50
-  cluster_tag_name = "${local.data_cluster_name}"
-  cluster_name     = "${local.data_cluster_name}"
-  machine_type     = "${var.machine_type}"
-  image            = "${var.image}"
-  startup_script   = "${data.template_file.startup_script_data.rendered}"
-  cluster_size     = "2"
-  network          = "${module.vpc_network.network}"
-  subnetwork       = "${module.vpc_network.public_subnetwork}"
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "influxdb"
+  network_tag             = "${local.data_cluster_name}"
+  name                    = "${local.data_cluster_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.image}"
+  startup_script          = "${data.template_file.startup_script_data.rendered}"
+  size                    = 2
+  network                 = "default"
 
   // For the example, we want to delete the data volume on 'terraform destroy'
   data_volume_auto_delete = "true"
 
   // To make testing easier, we're assigning public IPs to the node
-  allow_public_access = "true"
+  assign_public_ip = "true"
 
   // Use the custom InfluxDB SA
   service_account_email = "${module.service_account.email}"
-
-  // We're tagging the instances with the 'public' tag. See the Access Tier documentation for details:
-  // https://github.com/gruntwork-io/terraform-google-network/tree/master/modules/vpc-network#access-tier
-  // NOTE: This is *NOT* recommended for production, as it makes the InfluxDB instances accessible from
-  // the public internet. For production setup, we recommend using ´private_persistence´ or ´private´ network tag.
-  custom_tags = ["${module.vpc_network.public}"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -85,36 +80,30 @@ data "template_file" "startup_script_data" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_meta" {
-  source = "../../modules/influxdb-cluster"
+  source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
   region  = "${var.region}"
 
-  data_volume_size = 50
-  cluster_tag_name = "${local.meta_cluster_name}"
-  cluster_name     = "${local.meta_cluster_name}"
-  machine_type     = "${var.machine_type}"
-  image            = "${var.image}"
-  startup_script   = "${data.template_file.startup_script_meta.rendered}"
-  cluster_size     = "3"
-  network          = "${module.vpc_network.network}"
-  subnetwork       = "${module.vpc_network.public_subnetwork}"
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "influxdb"
+  network_tag             = "${local.meta_cluster_name}"
+  name                    = "${local.meta_cluster_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.image}"
+  startup_script          = "${data.template_file.startup_script_meta.rendered}"
+  size                    = 3
+  network                 = "default"
 
   // For the example, we want to delete the data volume on 'terraform destroy'
   data_volume_auto_delete = "true"
 
   // To make testing easier, we're assigning public IPs to the node
-  allow_public_access = "true"
+  assign_public_ip = "true"
 
   // Use the custom InfluxDB SA
   service_account_email = "${module.service_account.email}"
-
-  // We're tagging the instances with the 'public' tag. See the Access Tier documentation for details:
-  // https://github.com/gruntwork-io/terraform-google-network/tree/master/modules/vpc-network#access-tier
-  // NOTE: This is *NOT* recommended for production, as it makes the InfluxDB instances accessible from
-  // the public internet. For production setup, we recommend using ´private_persistence´ or ´private´ network tag.
-  // We're placing the meta nodes in the same network as the data nodes to ensure connectivity across nodes.
-  custom_tags = ["${module.vpc_network.public}"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -147,50 +136,17 @@ module "service_account" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE A NETWORK TO DEPLOY THE CLUSTER TO
+# CREATE FIREWALL RULES FOR THE CLUSTER
+# To make testing easier, we're allowing access from all IP addresses
 # ---------------------------------------------------------------------------------------------------------------------
 
-module "vpc_network" {
-  source = "git::https://github.com/gruntwork-io/terraform-google-network.git//modules/vpc-network?ref=v0.1.1"
+module "influxdb_firewall" {
+  source = "../../modules/influxdb-firewall-rules"
 
   name_prefix = "${var.cluster_name}"
+  network     = "default"
   project     = "${var.project}"
-  region      = "${var.region}"
+  target_tags = ["${module.influxdb_data.network_tag}", "${module.influxdb_meta.network_tag}"]
 
-  cidr_block           = "${var.vpc_cidr_block}"
-  secondary_cidr_block = "${var.vpc_secondary_cidr_block}"
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# CREATE INTERNAL LOAD BALANCER
-#
-# NOTE: The internal load balancer is not accessible from the internet
-# ---------------------------------------------------------------------------------------------------------------------
-
-module "load_balancer" {
-  source = "git::https://github.com/gruntwork-io/terraform-google-load-balancer.git//modules/internal-load-balancer?ref=v0.1.2"
-
-  project = "${var.project}"
-
-  backends = [
-    {
-      description = "Backend for InfluxDB Data CLuster ${local.data_cluster_name}"
-      group       = "${module.influxdb_data.instance_group}"
-    },
-  ]
-
-  name = "${local.data_cluster_name}-lb"
-
-  # List of ports the load balancer will load balance
-  ports             = ["8086"]
-  region            = "${var.region}"
-  health_check_port = "8086"
-
-  network    = "${module.vpc_network.network}"
-  subnetwork = "${module.vpc_network.public_subnetwork}"
-
-  session_affinity = "NONE"
-  service_label    = "data"
-
-  target_tags = ["${local.data_cluster_name}"]
+  allow_api_access_from_cidr_blocks = ["0.0.0.0/0"]
 }
