@@ -1,6 +1,6 @@
 # Telegraf Run Script
 
-This folder contains a script for configuring and initializing Telegraf on an [GCP Compute Engine](https://cloud.google.com/compute/) server. 
+This folder contains a script for configuring and initializing [Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) on an [GCP Compute Engine](https://cloud.google.com/compute/) server. 
 This script has been tested on the following operating systems:
 
 * Ubuntu 18.04

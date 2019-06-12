@@ -1,6 +1,6 @@
 # Telegraf Install Script
 
-Telegraf is an agent for collecting metrics from a variety of sources
+[Telegraf](https://www.influxdata.com/time-series-platform/telegraf/) is an agent for collecting metrics from a variety of sources
 and writing them to InfluxDB or other outputs.
 This folder contains a script for installing Telegraf and its dependencies.
 
