@@ -3,7 +3,7 @@
   "variables": {
     "region": "us-east1",
     "zone": "us-east1-a",
-    "version": "1.5.2",
+    "kapacitor_version": "1.5.2",
     "project_id": "{{env `GOOGLE_CLOUD_PROJECT`}}",
     "service_account_json": "{{env `GOOGLE_CREDENTIALS`}}"
   },
@@ -40,7 +40,7 @@
   },{
     "type": "shell",
     "inline": [
-      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `version`}}"
+      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `kapacitor_version`}}"
     ]
   }]
 }

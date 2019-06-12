@@ -29,7 +29,7 @@ provisioner. Instead of:
   },{
     "type": "shell",
     "inline": [
-      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `version`}}"
+      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `kapacitor_version`}}"
     ],
     "pause_before": "30s"
   }]
@@ -44,7 +44,7 @@ Your code should look more like this:
     "type": "shell",
     "inline": [
       "git clone --branch <MODULE_VERSION> https://github.com/gruntwork-io/terraform-google-influx.git /tmp/terraform-google-influx",
-      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `version`}}"
+      "/tmp/terraform-google-influx/modules/install-kapacitor/install-kapacitor --version {{user `kapacitor_version`}}"
     ],
     "pause_before": "30s"
   }]
