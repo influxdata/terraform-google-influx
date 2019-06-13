@@ -14,7 +14,6 @@ import (
 )
 
 const EXAMPLE_DIR_TICK_COLO = "tick-oss-colocated"
-const EXAMPLE_DIR_TICK_ENTERPRISE = "influxdb-enterprise"
 
 func TestTICK(t *testing.T) {
 	t.Parallel()
@@ -127,7 +126,7 @@ func TestTICK(t *testing.T) {
 			})
 
 			test_structure.RunTestStage(t, "validate", func() {
-				publicIP := getInfluxDBDataNodePublicIP(t, exampleDir, testCase.igOutput)
+				publicIP := getNodePublicIP(t, exampleDir, testCase.igOutput)
 				port := "8086"
 				validateInfluxdb(t, publicIP, port)
 				validateChronograf(t, publicIP, "8888")

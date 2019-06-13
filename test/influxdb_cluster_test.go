@@ -145,7 +145,7 @@ func TestInfluxDBClusters(t *testing.T) {
 			})
 
 			test_structure.RunTestStage(t, "validate", func() {
-				publicIP := getInfluxDBDataNodePublicIP(t, exampleDir, testCase.igOutput)
+				publicIP := getNodePublicIP(t, exampleDir, testCase.igOutput)
 				port := "8086"
 				validateInfluxdb(t, publicIP, port)
 			})

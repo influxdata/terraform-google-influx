@@ -50,7 +50,7 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 	return packer.BuildArtifact(t, options)
 }
 
-func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
+func getNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
 	maxRetries := 15
 	sleepBetweenRetries := 5 * time.Second
 
