@@ -70,6 +70,7 @@ data "template_file" "startup_script_data" {
     region           = "${var.region}"
     license_key      = "${var.license_key}"
     shared_secret    = "${var.shared_secret}"
+    disk_device_name = "influxdb"
     disk_mount_point = "/influxdb"
     disk_owner       = "influxdb"
   }
@@ -118,6 +119,7 @@ data "template_file" "startup_script_meta" {
     region           = "${var.region}"
     license_key      = "${var.license_key}"
     shared_secret    = "${var.shared_secret}"
+    disk_device_name = "influxdb"
     disk_mount_point = "/influxdb"
     disk_owner       = "influxdb"
   }

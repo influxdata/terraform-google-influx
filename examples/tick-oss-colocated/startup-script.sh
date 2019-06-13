@@ -11,31 +11,17 @@ exec > >(tee /var/log/startup-script.log|logger -t startup-script -s 2>/dev/cons
 
 source "/opt/influxdb-commons/influxdb-common.sh"
 
-function mount_disk {
-  local -r mount_point="$1"
-  local -r owner="$2"
-
-  # confirm fstab mounts are created before continuing
-  mount -a
-
-  # mount influxdb volume if it is not already mounted
-  if [ ! -d "$mount_point" ]; then
-    format_and_mount_disk "$mount_point" "$owner"
-  fi
-}
-
 function run {
-  local -r disk_mount_point="$1"
-  local -r disk_owner="$2"
-  local -r influxdb_url="$3"
-  local -r telegraf_database="$4"
-  local -r chronograf_host="$5"
-  local -r chronograf_port="$6"
-  local -r kapacitor_hostname="$7"
+  local -r disk_device_name="$1"
+  local -r disk_mount_point="$2"
+  local -r disk_owner="$3"
+  local -r influxdb_url="$4"
+  local -r telegraf_database="$5"
+  local -r chronograf_host="$6"
+  local -r chronograf_port="$7"
+  local -r kapacitor_hostname="$8"
 
-
-
-  mount_disk "$disk_mount_point" "$disk_owner"
+  mount_disk "$disk_device_name" "$disk_mount_point" "$disk_owner"
 
   # InfluxDB dirs
   local -r meta_dir="$disk_mount_point/var/lib/influxdb/meta"
@@ -69,6 +55,7 @@ function run {
 }
 
 run \
+  "${disk_device_name}" \
   "${disk_mount_point}" \
   "${disk_owner}" \
   "${influxdb_url}" \

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This script is meant to be run as the Startup Script of each Compute Instance while it's booting. The script uses the
 # run-influxdb script to configure and start InfluxDB. This script assumes it's running in a Compute Instance based on a
-# Google Image built from the Packer template in examples/influxdb-image/influxdb.json.
+# Google Image built from the Packer template in examples/machine-images/influxdb-enterprise/influxdb-enterprise.json.
 
 set -e
 
@@ -11,30 +11,18 @@ exec > >(tee /var/log/startup-script.log|logger -t startup-script -s 2>/dev/cons
 
 source "/opt/influxdb-commons/influxdb-common.sh"
 
-function mount_disk {
-  local -r mount_point="$1"
-  local -r owner="$2"
-
-  # confirm fstab mounts are created before continuing
-  mount -a
-
-  # mount influxdb volume if it is not already mounted
-  if [ ! -d "$mount_point" ]; then
-    format_and_mount_disk "$mount_point" "$owner"
-  fi
-}
-
 function run {
   local -r meta_group_name="$1"
   local -r region="$2"
   local -r license_key="$3"
   local -r shared_secret="$4"
-  local -r disk_mount_point="$5"
-  local -r disk_owner="$6"
+  local -r disk_device_name="$5"
+  local -r disk_mount_point="$6"
+  local -r disk_owner="$7"
   local -r hostname=$(get_node_hostname)
   local -r private_ip=$(get_node_private_ip)
 
-  mount_disk "$disk_mount_point" "$disk_owner"
+  mount_disk "$disk_device_name" "$disk_mount_point" "$disk_owner"
 
   local -r meta_dir="$disk_mount_point/var/lib/influxdb/meta"
   local -r data_dir="$disk_mount_point/var/lib/influxdb/data"
@@ -61,5 +49,6 @@ run \
   "${region}" \
   "${license_key}" \
   "${shared_secret}" \
+  "${disk_device_name}" \
   "${disk_mount_point}" \
   "${disk_owner}"

@@ -88,6 +88,7 @@ data "template_file" "startup_script" {
   template = "${file("${path.module}/startup-script.sh")}"
 
   vars {
+    disk_device_name = "influxdb"
     disk_mount_point = "/influxdb"
     disk_owner       = "influxdb"
   }
