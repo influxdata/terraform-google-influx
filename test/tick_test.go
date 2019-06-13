@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -23,10 +22,10 @@ func TestTICK(t *testing.T) {
 	// For convenience - uncomment these as well as the "os" import
 	// when doing local testing if you need to skip any sections.
 	// os.Setenv("SKIP_", "true")
-	os.Setenv("SKIP_bootstrap", "true")
-	os.Setenv("SKIP_build_image", "true")
-	os.Setenv("SKIP_deploy", "true")
-	os.Setenv("SKIP_validate", "true")
+	//os.Setenv("SKIP_bootstrap", "true")
+	//os.Setenv("SKIP_build_image", "true")
+	//os.Setenv("SKIP_deploy", "true")
+	//os.Setenv("SKIP_validate", "true")
 	//os.Setenv("SKIP_teardown", "true")
 
 	// Keeping the testcases struct, even though we're only running a single test

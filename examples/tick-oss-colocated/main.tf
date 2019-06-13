@@ -32,7 +32,8 @@ module "tick_oss" {
 
   size = 1
 
-  data_volume_size        = 50
+  data_volume_size        = 10
+  root_volume_size        = 20
   data_volume_device_name = "influxdb"
   network_tag             = "${var.name}"
   name                    = "${var.name}"
