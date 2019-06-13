@@ -1,0 +1,375 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE AN ENTERPRISE INFLUXDB CLUSTER
+# ---------------------------------------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------------------------------------
+# SETUP PROVIDER
+# ---------------------------------------------------------------------------------------------------------------------
+
+provider "google" {
+  version = "~> 2.7.0"
+  region  = "${var.region}"
+  project = "${var.project}"
+}
+
+provider "google-beta" {
+  version = "~> 2.7.0"
+  region  = "${var.region}"
+  project = "${var.project}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# PREPARE LOCALS
+# ---------------------------------------------------------------------------------------------------------------------
+
+locals {
+  data_cluster_name      = "${var.name_prefix}-data"
+  meta_cluster_name      = "${var.name_prefix}-meta"
+  kapacitor_server_name  = "${var.name_prefix}-kapacitor"
+  chronograf_server_name = "${var.name_prefix}-chronograf"
+  telegraf_server_name   = "${var.name_prefix}-telegraf"
+
+  data_cluster_tag      = "${var.name_prefix}-data"
+  meta_cluster_tag      = "${var.name_prefix}-meta"
+  kapacitor_server_tag  = "${var.name_prefix}-kapacitor"
+  chronograf_server_tag = "${var.name_prefix}-chronograf"
+  telegraf_server_tag   = "${var.name_prefix}-telegraf"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE A SERVICE ACCOUNT FOR THE CLUSTER INSTANCE
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "service_account" {
+  source = "../../modules/influxdb-service-account"
+
+  project      = "${var.project}"
+  name         = "${var.name_prefix}-sa"
+  display_name = "Service Account for TICK Enterprise ${var.name_prefix}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE THE INFLUXDB DATA CLUSTER
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "influxdb_data" {
+  source = "../../modules/tick-instance-group"
+
+  project = "${var.project}"
+  region  = "${var.region}"
+
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "influxdb"
+  network_tag             = "${local.data_cluster_tag}"
+  name                    = "${local.data_cluster_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.influxdb_image}"
+  startup_script          = "${data.template_file.startup_script_data.rendered}"
+  size                    = 2
+  network                 = "default"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
+  // To make testing easier, we're assigning public IPs to the node
+  assign_public_ip = "true"
+
+  // Use the custom InfluxDB SA
+  service_account_email = "${module.service_account.email}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# RENDER THE DATA STARTUP SCRIPT THAT WILL RUN ON EACH DATA NODE ON BOOT
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "startup_script_data" {
+  template = "${file("${path.module}/startup-scripts/startup-script-data.sh")}"
+
+  vars {
+    meta_group_name  = "${local.meta_cluster_name}"
+    region           = "${var.region}"
+    license_key      = "${var.license_key}"
+    shared_secret    = "${var.shared_secret}"
+    disk_device_name = "influxdb"
+    disk_mount_point = "/influxdb"
+    disk_owner       = "influxdb"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE INTERNAL LOAD BALANCER FOR THE INFLUX DATA NODES
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "influxdb_data_lb" {
+  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.1.2"
+
+  name    = "${var.name_prefix}-data-lb"
+  region  = "${var.region}"
+  project = "${var.project}"
+
+  backends = [
+    {
+      group = "${module.influxdb_data.instance_group}"
+    },
+  ]
+
+  # This setting will enable internal DNS for the load balancer
+  service_label = "data"
+
+  network = "default"
+
+  health_check_port = 8086
+  target_tags       = ["${local.data_cluster_tag}"]
+  source_tags       = ["${local.kapacitor_server_tag}", "${local.telegraf_server_tag}", "${local.chronograf_server_tag}"]
+  ports             = ["8086"]
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE THE INFLUXDB META CLUSTER
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "influxdb_meta" {
+  source = "../../modules/tick-instance-group"
+
+  project = "${var.project}"
+  region  = "${var.region}"
+
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "influxdb"
+  network_tag             = "${local.meta_cluster_tag}"
+  name                    = "${local.meta_cluster_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.influxdb_image}"
+  startup_script          = "${data.template_file.startup_script_meta.rendered}"
+  size                    = 3
+  network                 = "default"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
+  // To make testing easier, we're assigning public IPs to the node
+  assign_public_ip = "true"
+
+  // Use the custom InfluxDB SA
+  service_account_email = "${module.service_account.email}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# RENDER THE META STARTUP SCRIPT THAT WILL RUN ON EACH META NODE ON BOOT
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "startup_script_meta" {
+  template = "${file("${path.module}/startup-scripts/startup-script-meta.sh")}"
+
+  vars {
+    meta_group_name  = "${local.meta_cluster_name}"
+    region           = "${var.region}"
+    license_key      = "${var.license_key}"
+    shared_secret    = "${var.shared_secret}"
+    disk_device_name = "influxdb"
+    disk_mount_point = "/influxdb"
+    disk_owner       = "influxdb"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE INTERNAL LOAD BALANCER FOR THE INFLUX META NODES
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "influxdb_meta_lb" {
+  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.1.2"
+
+  name    = "${var.name_prefix}-meta-lb"
+  region  = "${var.region}"
+  project = "${var.project}"
+
+  backends = [
+    {
+      group = "${module.influxdb_meta.instance_group}"
+    },
+  ]
+
+  # This setting will enable internal DNS for the load balancer
+  service_label = "meta"
+
+  network = "default"
+
+  health_check_port = 8091
+  target_tags       = ["${local.meta_cluster_tag}"]
+  source_tags       = ["${local.chronograf_server_tag}"]
+  ports             = ["8091"]
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE THE KAPACITOR SERVER
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "kapacitor" {
+  source = "../../modules/tick-instance-group"
+
+  project = "${var.project}"
+  region  = "${var.region}"
+
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "kapacitor"
+  network_tag             = "${local.kapacitor_server_tag}"
+  name                    = "${local.kapacitor_server_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.kapacitor_image}"
+  startup_script          = "${data.template_file.startup_script_kapacitor.rendered}"
+  size                    = 1
+  network                 = "default"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
+  // To make testing easier, we're assigning public IPs to the node
+  assign_public_ip = "true"
+
+  // Use the custom InfluxDB SA
+  service_account_email = "${module.service_account.email}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# RENDER THE KAPACITOR STARTUP SCRIPT THAT WILL RUN ON EACH META NODE ON BOOT
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "startup_script_kapacitor" {
+  template = "${file("${path.module}/startup-scripts/startup-script-kapacitor.sh")}"
+
+  vars {
+    influxdb_url     = "http://${module.influxdb_data_lb.load_balancer_domain_name}:8086"
+    disk_device_name = "kapacitor"
+    disk_mount_point = "/kapacitor"
+    disk_owner       = "kapacitor"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE THE CHRONOGRAF SERVER
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "chronograf" {
+  source = "../../modules/tick-instance-group"
+
+  project = "${var.project}"
+  region  = "${var.region}"
+
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "chronograf"
+  network_tag             = "${local.chronograf_server_tag}"
+  name                    = "${local.chronograf_server_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.chronograf_image}"
+  startup_script          = "${data.template_file.startup_script_chronograf.rendered}"
+  size                    = 1
+  network                 = "default"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
+  // To make testing easier, we're assigning public IPs to the node
+  assign_public_ip = "true"
+
+  // Use the custom InfluxDB SA
+  service_account_email = "${module.service_account.email}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# RENDER THE CHRONOGRAF STARTUP SCRIPT THAT WILL RUN ON EACH META NODE ON BOOT
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "startup_script_chronograf" {
+  template = "${file("${path.module}/startup-scripts/startup-script-chronograf.sh")}"
+
+  vars {
+    host = "0.0.0.0"
+    port = "8888"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE THE TELEGRAF SERVER
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "telegraf" {
+  source = "../../modules/tick-instance-group"
+
+  project = "${var.project}"
+  region  = "${var.region}"
+
+  data_volume_size        = 10
+  root_volume_size        = 10
+  data_volume_device_name = "telegraf"
+  network_tag             = "${local.telegraf_server_tag}"
+  name                    = "${local.telegraf_server_name}"
+  machine_type            = "${var.machine_type}"
+  image                   = "${var.telegraf_image}"
+  startup_script          = "${data.template_file.startup_script_telegraf.rendered}"
+  size                    = 1
+  network                 = "default"
+
+  // For the example, we want to delete the data volume on 'terraform destroy'
+  data_volume_auto_delete = "true"
+
+  // To make testing easier, we're assigning public IPs to the node
+  assign_public_ip = "true"
+
+  // Use the custom InfluxDB SA
+  service_account_email = "${module.service_account.email}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# RENDER THE CHRONOGRAF STARTUP SCRIPT THAT WILL RUN ON EACH META NODE ON BOOT
+# ---------------------------------------------------------------------------------------------------------------------
+
+data "template_file" "startup_script_telegraf" {
+  template = "${file("${path.module}/startup-scripts/startup-script-telegraf.sh")}"
+
+  vars {
+    influxdb_url  = "http://${module.influxdb_data_lb.load_balancer_domain_name}:8086"
+    database_name = "telegraf"
+  }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE FIREWALL RULES FOR THE CLUSTER
+# To make testing easier, we're allowing access from all IP addresses
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "influxdb_firewall" {
+  source = "../../modules/influxdb-firewall-rules"
+
+  name_prefix = "${var.name_prefix}"
+  network     = "default"
+  project     = "${var.project}"
+  target_tags = ["${local.data_cluster_tag}", "${local.meta_cluster_tag}"]
+
+  allow_api_access_from_cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "kapacitor_firewall" {
+  source = "../../modules/kapacitor-firewall-rules"
+
+  name_prefix = "${var.name_prefix}"
+  network     = "default"
+  project     = "${var.project}"
+  target_tags = ["${local.kapacitor_server_tag}"]
+
+  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
+}
+
+module "chronograf_firewall" {
+  source = "../../modules/chronograf-firewall-rules"
+
+  name_prefix = "${var.name_prefix}"
+  network     = "default"
+  project     = "${var.project}"
+  target_tags = ["${local.chronograf_server_tag}"]
+
+  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
+}
