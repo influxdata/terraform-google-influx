@@ -2,20 +2,18 @@ package test
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
-	"testing"
-	"time"
-
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
+	"path/filepath"
+	"strings"
+	"testing"
 )
 
 const EXAMPLE_DIR_TICK_COLO = "tick-oss-colocated"
 
-func TestTICK(t *testing.T) {
+func TestTICKOSS(t *testing.T) {
 	t.Parallel()
 
 	// For convenience - uncomment these as well as the "os" import
@@ -30,33 +28,19 @@ func TestTICK(t *testing.T) {
 	// Keeping the testcases struct, even though we're only running a single test
 
 	var testcases = []struct {
-		testName      string
-		testDir       string
-		igOutput      string
-		packerInfo    PackerInfo
-		isEnterprise  bool
-		sleepDuration int
+		testName   string
+		testDir    string
+		igOutput   string
+		packerInfo PackerInfo
 	}{
 		{
-			"TestTICK-OSS",
+			"Colocated",
 			EXAMPLE_DIR_TICK_COLO,
 			"tick_oss_instance_group",
 			PackerInfo{
 				builderName:  "gcp",
 				templatePath: "tick-oss-all-in-one/tick-oss.json"},
-			false,
-			0,
-		}, /**
-		{
-			"TestTICK-Enterprise",
-			EXAMPLE_DIR_INFLUXDB_ENTERPRISE,
-			"influxdb_data_instance_group",
-			PackerInfo{
-				builderName:  "gcp",
-				templatePath: "influxdb-enterprise/influxdb-enterprise.json"},
-			true,
-			4,
-		},*/
+		},
 	}
 
 	for _, testCase := range testcases {
@@ -66,10 +50,6 @@ func TestTICK(t *testing.T) {
 
 		t.Run(testCase.testName, func(t *testing.T) {
 			t.Parallel()
-
-			// This is terrible - but attempt to stagger the test cases to
-			// avoid a concurrency issue
-			time.Sleep(time.Duration(testCase.sleepDuration) * time.Second)
 
 			_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 			exampleDir := filepath.Join(_examplesDir, testCase.testDir)
@@ -105,7 +85,6 @@ func TestTICK(t *testing.T) {
 
 				clusterName := fmt.Sprintf("%s-%s", "tick-oss", randomId)
 
-				// The vars here cover both OSS and Enterprise distributions
 				terraformOptions := &terraform.Options{
 					// The path to where your Terraform code is located
 					TerraformDir: exampleDir,
