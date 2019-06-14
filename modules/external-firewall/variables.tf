@@ -25,34 +25,19 @@ variable "network" {
 # These parameters have reasonable defaults.
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "api_port" {
-  description = "The HTTP API port the Data nodes listen on for external communication."
-  default     = "8086"
-}
-
-variable "raft_port" {
-  description = "The Raft consensus protocol port on which Meta/Data nodes communicate with each other"
-  default     = "8089"
-}
-
-variable "rest_port" {
-  description = "The HTTP API port the Meta/Data nodes listen on for internal communication."
-  default     = "8091"
-}
-
-variable "tcp_port" {
-  description = "The port the Meta/Data nodes use for internal communication via a TCP protocol."
-  default     = "8088"
-}
-
-variable "allow_api_access_from_source_tags" {
-  description = "If source tags are specified, the external firewall will apply only to traffic with source IP that belongs to a tag listed in source tags."
+variable "ports" {
+  description = "An optional list of ports or port ranges to which this rule applies. If not specified, this rule applies to connections through any port."
   type        = "list"
   default     = []
 }
 
-variable "allow_api_access_from_cidr_blocks" {
-  description = "The list of CIDR-formatted IP address ranges from which access to InfluxDB will be allowed."
+variable "protocol" {
+  description = "The IP protocol to which this rule applies."
+  default     = "tcp"
+}
+
+variable "allow_access_from_cidr_blocks" {
+  description = "The list of CIDR-formatted IP address ranges from which access will be allowed."
   type        = "list"
   default     = []
 }

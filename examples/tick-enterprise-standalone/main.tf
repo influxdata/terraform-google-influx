@@ -37,15 +37,25 @@ locals {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE A SERVICE ACCOUNT FOR THE CLUSTER INSTANCE
+# CREATE A SERVICE ACCOUNT FOR THE CLUSTER AND ALLOW TRAFFIC WITHIN THE CLUSTER
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "service_account" {
-  source = "../../modules/influxdb-service-account"
+  source = "../../modules/tick-service-account"
 
   project      = "${var.project}"
   name         = "${var.name_prefix}-sa"
   display_name = "Service Account for TICK Enterprise ${var.name_prefix}"
+}
+
+module "internal_firewall" {
+  source = "../../modules/service-account-firewall-rules"
+
+  project                 = "${var.project}"
+  name_prefix             = "${var.name_prefix}"
+  network                 = "default"
+  source_service_accounts = ["${module.service_account.email}"]
+  target_service_accounts = ["${module.service_account.email}"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -337,39 +347,17 @@ data "template_file" "startup_script_telegraf" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE FIREWALL RULES FOR THE CLUSTER
+# CREATE EXTERNAL FIREWALL RULES FOR THE CLUSTER
 # To make testing easier, we're allowing access from all IP addresses
 # ---------------------------------------------------------------------------------------------------------------------
 
-module "influxdb_firewall" {
-  source = "../../modules/influxdb-firewall-rules"
+module "external_firewall" {
+  source = "../../modules/external-firewall"
 
   name_prefix = "${var.name_prefix}"
   network     = "default"
   project     = "${var.project}"
-  target_tags = ["${local.data_cluster_tag}", "${local.meta_cluster_tag}"]
+  target_tags = ["${local.data_cluster_tag}", "${local.meta_cluster_tag}", "${local.kapacitor_server_tag}", "${local.chronograf_server_tag}"]
 
-  allow_api_access_from_cidr_blocks = ["0.0.0.0/0"]
-}
-
-module "kapacitor_firewall" {
-  source = "../../modules/kapacitor-firewall-rules"
-
-  name_prefix = "${var.name_prefix}"
-  network     = "default"
-  project     = "${var.project}"
-  target_tags = ["${local.kapacitor_server_tag}"]
-
-  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
-}
-
-module "chronograf_firewall" {
-  source = "../../modules/chronograf-firewall-rules"
-
-  name_prefix = "${var.name_prefix}"
-  network     = "default"
-  project     = "${var.project}"
-  target_tags = ["${local.chronograf_server_tag}"]
-
-  allow_http_access_from_cidr_blocks = ["0.0.0.0/0"]
+  allow_access_from_cidr_blocks = ["0.0.0.0/0"]
 }

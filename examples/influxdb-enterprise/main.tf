@@ -126,15 +126,25 @@ data "template_file" "startup_script_meta" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE A SERVICE ACCOUNT FOR THE CLUSTER INSTANCE
+# CREATE A SERVICE ACCOUNT FOR THE CLUSTER AND ALLOW TRAFFIC WITHIN THE CLUSTER
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "service_account" {
-  source = "../../modules/influxdb-service-account"
+  source = "../../modules/tick-service-account"
 
   project      = "${var.project}"
   name         = "${var.cluster_name}-sa"
   display_name = "Service Account for InfluxDB OSS Cluster ${var.cluster_name}"
+}
+
+module "internal_firewall" {
+  source = "../../modules/service-account-firewall-rules"
+
+  project                 = "${var.project}"
+  name_prefix             = "${var.cluster_name}"
+  network                 = "default"
+  source_service_accounts = ["${module.service_account.email}"]
+  target_service_accounts = ["${module.service_account.email}"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -142,13 +152,13 @@ module "service_account" {
 # To make testing easier, we're allowing access from all IP addresses
 # ---------------------------------------------------------------------------------------------------------------------
 
-module "influxdb_firewall" {
-  source = "../../modules/influxdb-firewall-rules"
+module "external_firewall" {
+  source = "../../modules/external-firewall"
 
   name_prefix = "${var.cluster_name}"
   network     = "default"
   project     = "${var.project}"
   target_tags = ["${module.influxdb_data.network_tag}", "${module.influxdb_meta.network_tag}"]
 
-  allow_api_access_from_cidr_blocks = ["0.0.0.0/0"]
+  allow_access_from_cidr_blocks = ["0.0.0.0/0"]
 }

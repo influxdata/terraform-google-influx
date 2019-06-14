@@ -128,7 +128,7 @@ The `run-influxdb-enterprise` script assumes the [Compute Instance Service Accou
 * `compute.instanceGroups.get`
 * `compute.instanceGroups.list`
 
-You can use the [influxdb-service-account module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-service-account) to set up a service account with minimum required roles.
+You can use the [tick-service-account module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/tick-service-account) to set up a service account with minimum required roles.
 
 ## Debugging tips and tricks
 
