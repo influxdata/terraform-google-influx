@@ -1,3 +1,11 @@
+# ------------------------------------------------------------------------------
+# ENVIRONMENT VARIABLES
+# Define these secrets as environment variables
+# ------------------------------------------------------------------------------
+
+# TF_VAR_license_key
+# TF_VAR_shared_secret
+
 # ---------------------------------------------------------------------------------------------------------------------
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
