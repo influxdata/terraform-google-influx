@@ -86,11 +86,11 @@ variable "root_volume_size" {
 
 variable "persistent_volumes" {
   description = "List of persistent volumes to be attached to the instance."
-  type = list(map(object({
+  type = list(object({
     device_name = string
     size        = number
     auto_delete = bool
-  })))
+  }))
   default = []
 }
 
