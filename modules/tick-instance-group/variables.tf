@@ -91,6 +91,7 @@ variable "persistent_volumes" {
     size        = number
     auto_delete = bool
   })))
+  default = []
 }
 
 variable "service_account_email" {
