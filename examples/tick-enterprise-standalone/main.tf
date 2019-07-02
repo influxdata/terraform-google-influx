@@ -41,6 +41,9 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "service_account" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-service-account?ref=v0.0.1"
   source = "../../modules/tick-service-account"
 
   project      = "${var.project}"
@@ -49,6 +52,9 @@ module "service_account" {
 }
 
 module "internal_firewall" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/service-account-firewall-rules?ref=v0.0.1"
   source = "../../modules/service-account-firewall-rules"
 
   project                 = "${var.project}"
@@ -63,6 +69,9 @@ module "internal_firewall" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_data" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
@@ -140,6 +149,9 @@ module "influxdb_data_lb" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_meta" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
@@ -217,6 +229,9 @@ module "influxdb_meta_lb" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "kapacitor" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
@@ -263,6 +278,9 @@ data "template_file" "startup_script_kapacitor" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "chronograf" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
@@ -307,6 +325,9 @@ data "template_file" "startup_script_chronograf" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "telegraf" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
   project = "${var.project}"
@@ -352,6 +373,9 @@ data "template_file" "startup_script_telegraf" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "external_firewall" {
+  # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
+  # to a specific version of the modules, such as the following example:
+  # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/external-firewall?ref=v0.0.1"
   source = "../../modules/external-firewall"
 
   name_prefix = "${var.name_prefix}"
