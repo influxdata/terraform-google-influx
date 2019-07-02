@@ -41,6 +41,6 @@ to install required files and binaries.
 * `startup_script`: Use this parameter to specify a [Startup Script](https://cloud.google.com/compute/docs/startupscript) 
 that each server will run during boot. This is where you can use the `run-xxx` scripts in the [modules folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules). 
 
-You can find the other parameters in [variables.tf](https://github.com/gruntwork-io/terraform-google-influx/blob/master/modules/managed-instance-group/variables.tf).
+You can find the other parameters in [variables.tf](https://github.com/gruntwork-io/terraform-google-influx/blob/master/modules/tick-instance-group/variables.tf).
 
 Check out the [examples folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples) for fully-working sample code.

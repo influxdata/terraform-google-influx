@@ -1,10 +1,10 @@
-# TICK Stack OSS Image
+# TICK OSS Image
 
 This folder shows an example of how to use the various install scripts with [Packer](https://www.packer.io/) to create a [custom image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) for [Compute Engine](https://cloud.google.com/compute/) that has all [TICK stack](https://www.influxdata.com/products/) components installed on top of Ubuntu 18.04.
 
 ## Quick start
 
-To build the InfluxDB Image:
+To build the TICK OSS Image:
 
 1. `git clone` this repo to your computer.
 1. Install [Packer](https://www.packer.io/).
