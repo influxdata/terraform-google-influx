@@ -231,7 +231,7 @@
   version = "v0.4.2"
 
 [[projects]]
-  digest = "1:603f6f7ac9b28f1c2b1e300d8b12e3c25a4bf6e6b4b76ccee37aea877374195f"
+  digest = "1:35ed9be6e5528f44d9ec9b460539d830a0fa7506c21f55bcdfd083c2e57fa4db"
   name = "github.com/gruntwork-io/terratest"
   packages = [
     "modules/aws",
@@ -252,8 +252,8 @@
     "modules/test-structure",
   ]
   pruneopts = "UT"
-  revision = "f3916f7a5f58e3fedf603388d3e3e8052d6a47a3"
-  version = "v0.16.1"
+  revision = "03959c963394b6d4547f456f3eacaca0790c9c00"
+  version = "v0.17.5"
 
 [[projects]]
   digest = "1:67474f760e9ac3799f740db2c489e6423a4cde45520673ec123ac831ad849cb8"
