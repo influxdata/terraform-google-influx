@@ -15,10 +15,9 @@ import (
 	"github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
-const EXAMPLE_DIR_INFLUXDB_OSS = "influxdb-oss"
 const EXAMPLE_DIR_INFLUXDB_ENTERPRISE = "influxdb-enterprise"
 
-func TestInfluxDBClusters(t *testing.T) {
+func TestInfluxDBEnterprise(t *testing.T) {
 	t.Parallel()
 
 	// For convenience - uncomment these as well as the "os" import
@@ -37,19 +36,8 @@ func TestInfluxDBClusters(t *testing.T) {
 		testDir       string
 		igOutput      string
 		packerInfo    PackerInfo
-		isEnterprise  bool
 		sleepDuration int
 	}{
-		/**{
-			"TestInfluxDBOSS",
-			EXAMPLE_DIR_INFLUXDB_OSS,
-			"influxdb_instance_group",
-			PackerInfo{
-				builderName:  "gcp",
-				templatePath: "influxdb-oss/influxdb-oss.json"},
-			false,
-			0,
-		},*/
 		{
 			"TestInfluxDBEnterprise",
 			EXAMPLE_DIR_INFLUXDB_ENTERPRISE,
@@ -57,7 +45,6 @@ func TestInfluxDBClusters(t *testing.T) {
 			PackerInfo{
 				builderName:  "gcp",
 				templatePath: "influxdb-enterprise/influxdb-enterprise.json"},
-			true,
 			4,
 		},
 	}
@@ -99,10 +86,8 @@ func TestInfluxDBClusters(t *testing.T) {
 				licenseKey := os.Getenv("LICENSE_KEY")
 				sharedSecret := os.Getenv("SHARED_SECRET")
 
-				if testCase.isEnterprise {
-					require.NotEmpty(t, licenseKey, "License key must be set as an env var and not included as plain-text")
-					require.NotEmpty(t, sharedSecret, "Shared secret must be set as an env var and not included as plain-text")
-				}
+				require.NotEmpty(t, licenseKey, "License key must be set as an env var and not included as plain-text")
+				require.NotEmpty(t, sharedSecret, "Shared secret must be set as an env var and not included as plain-text")
 
 				region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 				projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
@@ -114,10 +99,7 @@ func TestInfluxDBClusters(t *testing.T) {
 
 				imageID := buildImage(t, templatePath, testCase.packerInfo.builderName, projectId, region, zone)
 
-				baseName := "influxdb-oss"
-				if testCase.isEnterprise {
-					baseName = "influxdb-ent"
-				}
+				baseName := "influxdb-ent"
 
 				clusterName := fmt.Sprintf("%s-%s", baseName, randomId)
 
@@ -129,7 +111,6 @@ func TestInfluxDBClusters(t *testing.T) {
 						"region":        region,
 						"project":       projectId,
 						"image":         imageID,
-						"name":          clusterName,
 						"cluster_name":  clusterName,
 						"license_key":   licenseKey,
 						"shared_secret": sharedSecret,
