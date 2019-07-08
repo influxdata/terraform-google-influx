@@ -21,16 +21,16 @@ To deploy TICK Enterprise:
 
 ## Connecting to the cluster
 
-TODO:  Use the network LB with TF12
+As the example deploys internal load balancers that cannot be reached from the internet, we have made testing easier by assigning public IP addresses to the compute instances. 
 
-As the example deploys an internal load balancer that cannot be reached from outside the created network, we have made testing easier by assigning a public IP address to the InfluxDB compute instance. 
+You can get the instance public IP address using one of the following methods:
 
-You can get the public IP address using one of the following methods:
-
-1. Login to [GCP Console](https://console.cloud.google.com/), go to the VM instances page and locate the instance and its public IP address
+1. Login to [GCP Console](https://console.cloud.google.com/), go to the VM instances page and locate the instances' public IP addresses
 2. Run the following commands in the root folder of this repo:
   * `IGM=$(terraform output influxdb_instance_group_manager | tr -d '\n')`
   * `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances $IGM --limit=1 --uri)`
   * `gcloud compute instances describe $INSTANCE_URI --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`
 
 Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
+
+To connect to Chronograf, use the steps described above, replacing `influxdb_instance_group_manager` with `chronograf_instance_group_manager`.

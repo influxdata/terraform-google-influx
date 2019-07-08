@@ -24,8 +24,8 @@ func TestTICKEnterprise(t *testing.T) {
 	// For convenience - uncomment these as well as the "os" import
 	// when doing local testing if you need to skip any sections.
 	// os.Setenv("SKIP_", "true")
-	// os.Setenv("SKIP_bootstrap", "true")
-	// os.Setenv("SKIP_build_images", "true")
+	//os.Setenv("SKIP_bootstrap", "true")
+	//os.Setenv("SKIP_build_images", "true")
 	//os.Setenv("SKIP_deploy", "true")
 	//os.Setenv("SKIP_validate", "true")
 	//os.Setenv("SKIP_teardown", "true")
@@ -63,17 +63,7 @@ func TestTICKEnterprise(t *testing.T) {
 			"chronograf_instance_group",
 			"kapacitor_instance_group",
 			0,
-		}, /**
-		{
-			"TestTICK-Enterprise",
-			EXAMPLE_DIR_INFLUXDB_ENTERPRISE,
-			"influxdb_data_instance_group",
-			PackerInfo{
-				builderName:  "gcp",
-				templatePath: "influxdb-enterprise/influxdb-enterprise.json"},
-			true,
-			4,
-		},*/
+		},
 	}
 
 	for _, testCase := range testcases {
