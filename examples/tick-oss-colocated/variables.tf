@@ -12,7 +12,7 @@ variable "project" {
 }
 
 variable "name" {
-  description = "The name of the InfluxDB cluster/server (e.g. influxdb-oss-test). This variable is used to namespace all resources created by this module. It will also be used to name the instance group."
+  description = "The name of the cluster (e.g. tick-oss-example). This variable is used to namespace all resources created by this module. It will also be used to name the instance group."
 }
 
 variable "image" {

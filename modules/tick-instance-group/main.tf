@@ -1,15 +1,15 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# CREATE A GCE MANAGED INSTANCE GROUP TO RUN THE CLUSTER
+# CREATE A GCE MANAGED INSTANCE GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_compute_region_instance_group_manager" "default" {
-  name = "${var.cluster_name}"
+  name = "${var.name}"
 
-  base_instance_name = "${var.cluster_name}-instance"
+  base_instance_name = "${var.name}-instance"
   instance_template  = "${google_compute_instance_template.default.self_link}"
   region             = "${var.region}"
-  target_size        = "${var.cluster_size}"
-  target_pools       = ["${var.instance_group_target_pools}"]
+  target_size        = "${var.size}"
+  target_pools       = ["${var.target_pools}"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -17,15 +17,15 @@ resource "google_compute_region_instance_group_manager" "default" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_compute_instance_template" "default" {
-  name_prefix = "${var.cluster_name}-it"
-  description = "This template is used to create InfluxDB server instances."
+  name_prefix = "${var.name}-it"
+  description = "This template is used to create server instances for ${var.name}."
 
   // Add the shared tag name, and append any additional tags
-  tags = ["${concat(list(var.cluster_tag_name), var.custom_tags)}"]
+  tags = ["${concat(list(var.network_tag), var.custom_tags)}"]
 
   labels = "${var.custom_labels}"
 
-  instance_description = "${var.cluster_name} InfluxDB Cluster Instance"
+  instance_description = "${var.name} instance"
   machine_type         = "${var.machine_type}"
   can_ip_forward       = false
 
@@ -36,9 +36,9 @@ resource "google_compute_instance_template" "default" {
 
   metadata_startup_script = "${var.startup_script}"
 
-  // Create a new boot disk from a pre-created InfluxDB image
+  // Create a new boot disk from a pre-created image
   disk {
-    source_image = "${data.google_compute_image.influxdb.self_link}"
+    source_image = "${data.google_compute_image.default.self_link}"
     auto_delete  = true
     boot         = true
     disk_size_gb = "${var.root_volume_size}"
@@ -47,7 +47,7 @@ resource "google_compute_instance_template" "default" {
 
   // Use an persistent disk resource
   disk {
-    device_name  = "influxdb"
+    device_name  = "${var.data_volume_device_name}"
     auto_delete  = "${var.data_volume_auto_delete}"
     boot         = false
     disk_size_gb = "${var.data_volume_size}"
@@ -85,7 +85,7 @@ locals {
   # Terraform does not allow using lists of maps with conditionals, so we have to
   # trick terraform by creating a string conditional first.
   # See https://github.com/hashicorp/terraform/issues/12453
-  network_interface_key = "${var.allow_public_access == "true" ? "PUBLIC" : "PRIVATE"}"
+  network_interface_key = "${var.assign_public_ip == "true" ? "PUBLIC" : "PRIVATE"}"
 
   network_interface_def = {
     "PRIVATE" = [{
@@ -109,7 +109,7 @@ locals {
 # GET THE PRE-BUILT MACHINE IMAGE
 # ---------------------------------------------------------------------------------------------------------------------
 
-data "google_compute_image" "influxdb" {
+data "google_compute_image" "default" {
   name    = "${var.image}"
   project = "${var.image_project != "" ? var.image_project : var.project}"
 }

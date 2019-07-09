@@ -19,12 +19,24 @@ variable "project" {
   description = "ID of the GCP Project where all resources will be launched."
 }
 
-variable "cluster_name" {
-  description = "The name of the InfluxDB cluster (e.g. influxdb-prod-meta). This variable is used to namespace all resources created by this module. It will also be used to name the instance group."
+variable "name_prefix" {
+  description = "This variable is used to namespace all resources created by this module."
 }
 
-variable "image" {
-  description = "The source image used to create the boot disk for an InfluxDB node."
+variable "influxdb_image" {
+  description = "The source image used to create the boot disk for an InfluxDB nodes."
+}
+
+variable "kapacitor_image" {
+  description = "The source image used to create the boot disk for an Kapacitor nodes."
+}
+
+variable "telegraf_image" {
+  description = "The source image used to create the boot disk for an Telegraf nodes."
+}
+
+variable "chronograf_image" {
+  description = "The source image used to create the boot disk for an Chronograf nodes."
 }
 
 variable "license_key" {
@@ -55,6 +67,6 @@ variable "vpc_secondary_cidr_block" {
 }
 
 variable "machine_type" {
-  description = "The machine type of the Compute Instance to run for each node in the cluster (e.g. n1-standard-1)."
+  description = "The machine type of the Compute Instance to run for each node in the solution (e.g. n1-standard-1)."
   default     = "n1-standard-1"
 }

@@ -15,9 +15,9 @@
     "source_image_family": "ubuntu-1804-lts",
     "region": "{{user `region`}}",
     "zone": "{{user `zone`}}",
-    "image_description": "An Ubuntu 18.04 AMI that has Kapacitor installed.",
-    "image_name": "kapacitor-ubuntu-{{uuid | clean_image_name}}",
-    "image_family": "kapacitor-ubuntu-example",
+    "image_description": "An Ubuntu 18.04 AMI that has Telegraf installed.",
+    "image_name": "telegraf-ubuntu-{{uuid | clean_image_name}}",
+    "image_family": "telegraf-ubuntu-example",
     "account_file": "{{ user `service_account_json`}}",
     "ssh_username": "ubuntu"
   }],

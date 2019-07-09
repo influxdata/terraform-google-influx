@@ -4,11 +4,27 @@ set -e
 
 source "/opt/gruntwork/bash-commons/log.sh"
 
+# Shorthand disk mount defaulting to ext4.
+function mount_disk {
+  local -r device_name="$1"
+  local -r mount_point="$2"
+  local -r owner="$3"
+
+  # confirm fstab mounts are created before continuing
+  mount -a
+
+  # mount influxdb volume if it is not already mounted
+  if [ ! -d "$mount_point" ]; then
+    format_and_mount_disk "$device_name" "$mount_point" "$owner"
+  fi
+}
+
 # Volume mount operations
 function format_and_mount_disk() {
-  local -r mount_dir="$1"
-  local -r owner="$2"
-  local -r filesystem="${3:-ext4}"
+  local -r device_name="$1"
+  local -r mount_dir="$2"
+  local -r owner="$3"
+  local -r filesystem="${4:-ext4}"
 
   # Validate the filesystem variable.
   # Currently supported: ext4 and xfs.
@@ -18,9 +34,9 @@ function format_and_mount_disk() {
   fi
 
   # Translate the disk's name to filesystem path.
-  # Since we map the disk with 'influxdb', it will be available in '/dev/disk/by-id/google-influxdb'
+  # If we map the disk with 'influxdb', it will be available in '/dev/disk/by-id/google-influxdb'
   # https://medium.com/@DazWilkin/compute-engine-identifying-your-devices-aeae6c01a4d7
-  local -r disk_path="/dev/disk/by-id/google-influxdb"
+  local -r disk_path="/dev/disk/by-id/google-${device_name}"
 
   # Create mount directory.
   mkdir -p "${mount_dir}"

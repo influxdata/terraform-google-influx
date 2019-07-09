@@ -36,6 +36,18 @@ func getRandomRegion(t *testing.T, projectID string) string {
 	return gcp.GetRandomRegion(t, projectID, approvedRegions, []string{})
 }
 
+func createPackerOptions(templatePath string, builderName string, project string, region string, zone string) *packer.Options {
+	return &packer.Options{
+		Template: templatePath,
+		Only:     builderName,
+		Vars: map[string]string{
+			"project_id": project,
+			"region":     region,
+			"zone":       zone,
+		},
+	}
+}
+
 func buildImage(t *testing.T, templatePath string, builderName string, project string, region string, zone string) string {
 	options := &packer.Options{
 		Template: templatePath,
@@ -50,7 +62,7 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 	return packer.BuildArtifact(t, options)
 }
 
-func getInfluxDBDataNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
+func getNodePublicIP(t *testing.T, exampleDir string, outputName string) string {
 	maxRetries := 15
 	sleepBetweenRetries := 5 * time.Second
 
