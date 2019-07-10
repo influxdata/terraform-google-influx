@@ -3,5 +3,6 @@ output "email" {
   # purpose. Terraform won't establish a dependency graph without this to interpolate on.
   description = "The email address of the custom service account."
 
-  value = "${google_service_account.service_account.email}"
+  value = google_service_account.service_account.email
 }
+

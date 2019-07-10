@@ -8,14 +8,20 @@
 
 provider "google" {
   version = "~> 2.7.0"
-  region  = "${var.region}"
-  project = "${var.project}"
+  region  = var.region
+  project = var.project
 }
 
 provider "google-beta" {
   version = "~> 2.7.0"
-  region  = "${var.region}"
-  project = "${var.project}"
+  region  = var.region
+  project = var.project
+}
+
+terraform {
+  # The modules used in this example have been updated with 0.12 syntax, which means the example is no longer
+  # compatible with any versions below 0.12.
+  required_version = ">= 0.12"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -46,7 +52,7 @@ module "service_account" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-service-account?ref=v0.0.1"
   source = "../../modules/tick-service-account"
 
-  project      = "${var.project}"
+  project      = var.project
   name         = "${var.name_prefix}-sa"
   display_name = "Service Account for TICK Enterprise ${var.name_prefix}"
 }
@@ -57,11 +63,11 @@ module "internal_firewall" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/service-account-firewall-rules?ref=v0.0.1"
   source = "../../modules/service-account-firewall-rules"
 
-  project                 = "${var.project}"
-  name_prefix             = "${var.name_prefix}"
+  project                 = var.project
+  name_prefix             = var.name_prefix
   network                 = "default"
-  source_service_accounts = ["${module.service_account.email}"]
-  target_service_accounts = ["${module.service_account.email}"]
+  source_service_accounts = [module.service_account.email]
+  target_service_accounts = [module.service_account.email]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -74,28 +80,32 @@ module "influxdb_data" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
-  project = "${var.project}"
-  region  = "${var.region}"
+  project = var.project
+  region  = var.region
 
-  data_volume_size        = 10
-  root_volume_size        = 10
-  data_volume_device_name = "influxdb"
-  network_tag             = "${local.data_cluster_tag}"
-  name                    = "${local.data_cluster_name}"
-  machine_type            = "${var.machine_type}"
-  image                   = "${var.influxdb_image}"
-  startup_script          = "${data.template_file.startup_script_data.rendered}"
-  size                    = 2
-  network                 = "default"
+  root_volume_size = 10
+  network_tag      = local.data_cluster_tag
+  name             = local.data_cluster_name
+  machine_type     = var.machine_type
+  image            = var.influxdb_image
+  startup_script   = data.template_file.startup_script_data.rendered
+  size             = 2
+  network          = "default"
 
-  // For the example, we want to delete the data volume on 'terraform destroy'
-  data_volume_auto_delete = "true"
+  persistent_volumes = [
+    {
+      device_name = "influxdb"
+      size        = 10
+      // For the example, we want to delete the data volume on 'terraform destroy'
+      auto_delete = true
+    }
+  ]
 
   // To make testing easier, we're assigning public IPs to the node
-  assign_public_ip = "true"
+  assign_public_ip = true
 
   // Use the custom InfluxDB SA
-  service_account_email = "${module.service_account.email}"
+  service_account_email = module.service_account.email
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -103,13 +113,13 @@ module "influxdb_data" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script_data" {
-  template = "${file("${path.module}/startup-scripts/startup-script-data.sh")}"
+  template = file("${path.module}/startup-scripts/startup-script-data.sh")
 
-  vars {
-    meta_group_name  = "${local.meta_cluster_name}"
-    region           = "${var.region}"
-    license_key      = "${var.license_key}"
-    shared_secret    = "${var.shared_secret}"
+  vars = {
+    meta_group_name  = local.meta_cluster_name
+    region           = var.region
+    license_key      = var.license_key
+    shared_secret    = var.shared_secret
     disk_device_name = "influxdb"
     disk_mount_point = "/influxdb"
     disk_owner       = "influxdb"
@@ -121,15 +131,15 @@ data "template_file" "startup_script_data" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_data_lb" {
-  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.1.2"
+  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.2.1"
 
   name    = "${var.name_prefix}-data-lb"
-  region  = "${var.region}"
-  project = "${var.project}"
+  region  = var.region
+  project = var.project
 
   backends = [
     {
-      group = "${module.influxdb_data.instance_group}"
+      group = module.influxdb_data.instance_group
     },
   ]
 
@@ -139,8 +149,8 @@ module "influxdb_data_lb" {
   network = "default"
 
   health_check_port = 8086
-  target_tags       = ["${local.data_cluster_tag}"]
-  source_tags       = ["${local.kapacitor_server_tag}", "${local.telegraf_server_tag}", "${local.chronograf_server_tag}"]
+  target_tags       = [local.data_cluster_tag]
+  source_tags       = [local.kapacitor_server_tag, local.telegraf_server_tag, local.chronograf_server_tag]
   ports             = ["8086"]
 }
 
@@ -154,28 +164,32 @@ module "influxdb_meta" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
-  project = "${var.project}"
-  region  = "${var.region}"
+  project = var.project
+  region  = var.region
 
-  data_volume_size        = 10
-  root_volume_size        = 10
-  data_volume_device_name = "influxdb"
-  network_tag             = "${local.meta_cluster_tag}"
-  name                    = "${local.meta_cluster_name}"
-  machine_type            = "${var.machine_type}"
-  image                   = "${var.influxdb_image}"
-  startup_script          = "${data.template_file.startup_script_meta.rendered}"
-  size                    = 3
-  network                 = "default"
+  root_volume_size = 10
+  network_tag      = local.meta_cluster_tag
+  name             = local.meta_cluster_name
+  machine_type     = var.machine_type
+  image            = var.influxdb_image
+  startup_script   = data.template_file.startup_script_meta.rendered
+  size             = 3
+  network          = "default"
 
-  // For the example, we want to delete the data volume on 'terraform destroy'
-  data_volume_auto_delete = "true"
+  persistent_volumes = [
+    {
+      device_name = "influxdb"
+      size        = 10
+      // For the example, we want to delete the data volume on 'terraform destroy'
+      auto_delete = true
+    }
+  ]
 
   // To make testing easier, we're assigning public IPs to the node
-  assign_public_ip = "true"
+  assign_public_ip = true
 
   // Use the custom InfluxDB SA
-  service_account_email = "${module.service_account.email}"
+  service_account_email = module.service_account.email
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -183,13 +197,13 @@ module "influxdb_meta" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script_meta" {
-  template = "${file("${path.module}/startup-scripts/startup-script-meta.sh")}"
+  template = file("${path.module}/startup-scripts/startup-script-meta.sh")
 
-  vars {
-    meta_group_name  = "${local.meta_cluster_name}"
-    region           = "${var.region}"
-    license_key      = "${var.license_key}"
-    shared_secret    = "${var.shared_secret}"
+  vars = {
+    meta_group_name  = local.meta_cluster_name
+    region           = var.region
+    license_key      = var.license_key
+    shared_secret    = var.shared_secret
     disk_device_name = "influxdb"
     disk_mount_point = "/influxdb"
     disk_owner       = "influxdb"
@@ -201,15 +215,15 @@ data "template_file" "startup_script_meta" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "influxdb_meta_lb" {
-  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.1.2"
+  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.2.1"
 
   name    = "${var.name_prefix}-meta-lb"
-  region  = "${var.region}"
-  project = "${var.project}"
+  region  = var.region
+  project = var.project
 
   backends = [
     {
-      group = "${module.influxdb_meta.instance_group}"
+      group = module.influxdb_meta.instance_group
     },
   ]
 
@@ -219,8 +233,8 @@ module "influxdb_meta_lb" {
   network = "default"
 
   health_check_port = 8091
-  target_tags       = ["${local.meta_cluster_tag}"]
-  source_tags       = ["${local.chronograf_server_tag}"]
+  target_tags       = [local.meta_cluster_tag]
+  source_tags       = [local.chronograf_server_tag]
   ports             = ["8091"]
 }
 
@@ -234,28 +248,32 @@ module "kapacitor" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
-  project = "${var.project}"
-  region  = "${var.region}"
+  project = var.project
+  region  = var.region
 
-  data_volume_size        = 10
-  root_volume_size        = 10
-  data_volume_device_name = "kapacitor"
-  network_tag             = "${local.kapacitor_server_tag}"
-  name                    = "${local.kapacitor_server_name}"
-  machine_type            = "${var.machine_type}"
-  image                   = "${var.kapacitor_image}"
-  startup_script          = "${data.template_file.startup_script_kapacitor.rendered}"
-  size                    = 1
-  network                 = "default"
+  root_volume_size = 10
+  network_tag      = local.kapacitor_server_tag
+  name             = local.kapacitor_server_name
+  machine_type     = var.machine_type
+  image            = var.kapacitor_image
+  startup_script   = data.template_file.startup_script_kapacitor.rendered
+  size             = 1
+  network          = "default"
 
-  // For the example, we want to delete the data volume on 'terraform destroy'
-  data_volume_auto_delete = "true"
+  persistent_volumes = [
+    {
+      device_name = "kapacitor"
+      size        = 10
+      // For the example, we want to delete the data volume on 'terraform destroy'
+      auto_delete = true
+    }
+  ]
 
   // To make testing easier, we're assigning public IPs to the node
-  assign_public_ip = "true"
+  assign_public_ip = true
 
   // Use the custom InfluxDB SA
-  service_account_email = "${module.service_account.email}"
+  service_account_email = module.service_account.email
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -263,14 +281,42 @@ module "kapacitor" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script_kapacitor" {
-  template = "${file("${path.module}/startup-scripts/startup-script-kapacitor.sh")}"
+  template = file("${path.module}/startup-scripts/startup-script-kapacitor.sh")
 
-  vars {
+  vars = {
     influxdb_url     = "http://${module.influxdb_data_lb.load_balancer_domain_name}:8086"
     disk_device_name = "kapacitor"
     disk_mount_point = "/kapacitor"
     disk_owner       = "kapacitor"
   }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CREATE INTERNAL LOAD BALANCER FOR KAPACITOR
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "kapacitor_lb" {
+  source = "github.com/gruntwork-io/terraform-google-load-balancer//modules/internal-load-balancer?ref=v0.2.1"
+
+  name    = "${var.name_prefix}-kapacitor-lb"
+  region  = var.region
+  project = var.project
+
+  backends = [
+    {
+      group = module.kapacitor.instance_group
+    },
+  ]
+
+  # This setting will enable internal DNS for the load balancer
+  service_label = "kapacitor"
+
+  network = "default"
+
+  health_check_port = 9092
+  target_tags       = [local.kapacitor_server_tag]
+  source_tags       = [local.kapacitor_server_tag, local.data_cluster_tag]
+  ports             = ["9092"]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -283,28 +329,23 @@ module "chronograf" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
-  project = "${var.project}"
-  region  = "${var.region}"
+  project = var.project
+  region  = var.region
 
-  data_volume_size        = 10
-  root_volume_size        = 10
-  data_volume_device_name = "chronograf"
-  network_tag             = "${local.chronograf_server_tag}"
-  name                    = "${local.chronograf_server_name}"
-  machine_type            = "${var.machine_type}"
-  image                   = "${var.chronograf_image}"
-  startup_script          = "${data.template_file.startup_script_chronograf.rendered}"
-  size                    = 1
-  network                 = "default"
-
-  // For the example, we want to delete the data volume on 'terraform destroy'
-  data_volume_auto_delete = "true"
+  root_volume_size = 10
+  network_tag      = local.chronograf_server_tag
+  name             = local.chronograf_server_name
+  machine_type     = var.machine_type
+  image            = var.chronograf_image
+  startup_script   = data.template_file.startup_script_chronograf.rendered
+  size             = 1
+  network          = "default"
 
   // To make testing easier, we're assigning public IPs to the node
-  assign_public_ip = "true"
+  assign_public_ip = true
 
   // Use the custom InfluxDB SA
-  service_account_email = "${module.service_account.email}"
+  service_account_email = module.service_account.email
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -312,9 +353,9 @@ module "chronograf" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script_chronograf" {
-  template = "${file("${path.module}/startup-scripts/startup-script-chronograf.sh")}"
+  template = file("${path.module}/startup-scripts/startup-script-chronograf.sh")
 
-  vars {
+  vars = {
     host = "0.0.0.0"
     port = "8888"
   }
@@ -330,28 +371,23 @@ module "telegraf" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
   source = "../../modules/tick-instance-group"
 
-  project = "${var.project}"
-  region  = "${var.region}"
+  project = var.project
+  region  = var.region
 
-  data_volume_size        = 10
-  root_volume_size        = 10
-  data_volume_device_name = "telegraf"
-  network_tag             = "${local.telegraf_server_tag}"
-  name                    = "${local.telegraf_server_name}"
-  machine_type            = "${var.machine_type}"
-  image                   = "${var.telegraf_image}"
-  startup_script          = "${data.template_file.startup_script_telegraf.rendered}"
-  size                    = 1
-  network                 = "default"
-
-  // For the example, we want to delete the data volume on 'terraform destroy'
-  data_volume_auto_delete = "true"
+  root_volume_size = 10
+  network_tag      = local.telegraf_server_tag
+  name             = local.telegraf_server_name
+  machine_type     = var.machine_type
+  image            = var.telegraf_image
+  startup_script   = data.template_file.startup_script_telegraf.rendered
+  size             = 1
+  network          = "default"
 
   // To make testing easier, we're assigning public IPs to the node
-  assign_public_ip = "true"
+  assign_public_ip = true
 
   // Use the custom InfluxDB SA
-  service_account_email = "${module.service_account.email}"
+  service_account_email = module.service_account.email
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -359,9 +395,9 @@ module "telegraf" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script_telegraf" {
-  template = "${file("${path.module}/startup-scripts/startup-script-telegraf.sh")}"
+  template = file("${path.module}/startup-scripts/startup-script-telegraf.sh")
 
-  vars {
+  vars = {
     influxdb_url  = "http://${module.influxdb_data_lb.load_balancer_domain_name}:8086"
     database_name = "telegraf"
   }
@@ -378,10 +414,11 @@ module "external_firewall" {
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/external-firewall?ref=v0.0.1"
   source = "../../modules/external-firewall"
 
-  name_prefix = "${var.name_prefix}"
+  name_prefix = var.name_prefix
   network     = "default"
-  project     = "${var.project}"
-  target_tags = ["${local.data_cluster_tag}", "${local.meta_cluster_tag}", "${local.kapacitor_server_tag}", "${local.chronograf_server_tag}"]
+  project     = var.project
+  target_tags = [local.data_cluster_tag, local.meta_cluster_tag, local.kapacitor_server_tag, local.chronograf_server_tag]
 
   allow_access_from_cidr_blocks = ["0.0.0.0/0"]
 }
+

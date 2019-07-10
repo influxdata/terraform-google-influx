@@ -1,4 +1,5 @@
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_influx)
+![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
 # TICK Stack GCP Module
 
 This repo contains the **official** module for deploying the [TICK Stack](https://www.influxdata.com/time-series-platform/) on [GCP](https://cloud.google.com/gcp/) using [Terraform](https://www.terraform.io/) and [Packer](https://www.packer.io/).
