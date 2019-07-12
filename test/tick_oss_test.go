@@ -6,12 +6,14 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
 
-const EXAMPLE_DIR_TICK_COLO = "tick-oss-colocated"
+// This is the root example
+const EXAMPLE_DIR_TICK_COLO = ".."
 
 func TestTICKOSS(t *testing.T) {
 	t.Parallel()
@@ -19,10 +21,10 @@ func TestTICKOSS(t *testing.T) {
 	// For convenience - uncomment these as well as the "os" import
 	// when doing local testing if you need to skip any sections.
 	// os.Setenv("SKIP_", "true")
-	//os.Setenv("SKIP_bootstrap", "true")
-	//os.Setenv("SKIP_build_image", "true")
-	//os.Setenv("SKIP_deploy", "true")
-	//os.Setenv("SKIP_validate", "true")
+	os.Setenv("SKIP_bootstrap", "true")
+	os.Setenv("SKIP_build_image", "true")
+	os.Setenv("SKIP_deploy", "true")
+	os.Setenv("SKIP_validate", "true")
 	//os.Setenv("SKIP_teardown", "true")
 
 	// Keeping the testcases struct, even though we're only running a single test

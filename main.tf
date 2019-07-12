@@ -34,7 +34,7 @@ module "tick_oss" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-instance-group?ref=v0.0.1"
-  source = "../../modules/tick-instance-group"
+  source = "./modules/tick-instance-group"
 
   project = var.project
   region  = var.region
@@ -74,7 +74,7 @@ module "service_account" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/tick-service-account?ref=v0.0.1"
-  source = "../../modules/tick-service-account"
+  source = "./modules/tick-service-account"
 
   project      = var.project
   name         = "${var.name}-sa"
@@ -90,7 +90,7 @@ module "external_firewall" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "github.com/gruntwork-io/terraform-google-influx.git//modules/external-firewall?ref=v0.0.1"
-  source = "../../modules/external-firewall"
+  source = "./modules/external-firewall"
 
   name_prefix = var.name
   network     = "default"
@@ -105,7 +105,7 @@ module "external_firewall" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 data "template_file" "startup_script" {
-  template = file("${path.module}/startup-script.sh")
+  template = file("${path.module}/examples/tick-oss-colocated/startup-script.sh")
 
   vars = {
     disk_device_name   = "influxdb"
