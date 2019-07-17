@@ -1,6 +1,6 @@
 # TICK OSS Example
 
-This folder shows an example of Terraform code that uses various modules to deploy an OSS [TICK](https://www.influxdata.com/time-series-platform/) cluster in GCP.
+The root folder of this repository shows an example of Terraform code that uses various modules to deploy an OSS [TICK](https://www.influxdata.com/time-series-platform/) cluster in GCP.
 
 You will need to create a [custom image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) with all TICK components installed, which you can do using the [tick-oss-all-in-one example](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/machine-images/tick-oss-all-in-one). 
 

@@ -11,7 +11,8 @@ import (
 	"testing"
 )
 
-const EXAMPLE_DIR_TICK_COLO = "tick-oss-colocated"
+// This is the root example
+const EXAMPLE_DIR_TICK_COLO = ".."
 
 func TestTICKOSS(t *testing.T) {
 	t.Parallel()
