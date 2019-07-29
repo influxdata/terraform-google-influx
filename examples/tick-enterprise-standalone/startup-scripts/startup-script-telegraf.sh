@@ -13,6 +13,10 @@ function run {
   local -r influxdb_url="$1"
   local -r database_name="$2"
 
+  # Allow some time for InfluxDB to start so Telegraf can successfully connect and create the database
+  # This is to avoid intermittent failures in the automated tests
+  sleep 30
+
   "/opt/telegraf/bin/run-telegraf" \
     --auto-fill "<__INFLUXDB_URL__>=$influxdb_url" \
     --auto-fill "<__DATABASE_NAME__>=$database_name"

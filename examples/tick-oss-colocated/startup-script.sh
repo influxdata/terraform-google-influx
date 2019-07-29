@@ -39,10 +39,6 @@ function run {
     --auto-fill "<__DATA_DIR__>=$data_dir" \
     --auto-fill "<__WAL_DIR__>=$wal_dir"
 
-  "/opt/telegraf/bin/run-telegraf" \
-    --auto-fill "<__INFLUXDB_URL__>=$influxdb_url" \
-    --auto-fill "<__DATABASE_NAME__>=$telegraf_database"
-
   "/opt/kapacitor/bin/run-kapacitor" \
     --auto-fill "<__HOST_NAME__>=$kapacitor_hostname" \
     --auto-fill "<__STORAGE_DIR__>=$kapacitor_storage_dir" \
@@ -51,6 +47,15 @@ function run {
   "/opt/chronograf/bin/run-chronograf" \
     --auto-fill "<__HOST__>=$chronograf_host" \
     --auto-fill "<__PORT__>=$chronograf_port"
+
+  # Allow some time for InfluxDB to start so Telegraf can successfully connect and create the database
+  # This is to avoid intermittent failures in the automated tests
+  sleep 30
+
+  "/opt/telegraf/bin/run-telegraf" \
+    --auto-fill "<__INFLUXDB_URL__>=$influxdb_url" \
+    --auto-fill "<__DATABASE_NAME__>=$telegraf_database"
+
 
 }
 
