@@ -191,7 +191,7 @@ func validateTelegraf(t *testing.T, endpoint string, port string, databaseName s
 	sleepBetweenRetries := 5 * time.Second
 
 	// Create database
-	retry.DoWithRetry(t, "Querying database", maxRetries, sleepBetweenRetries, func() (string, error) {
+	retry.DoWithRetry(t, "Querying telegraf database", maxRetries, sleepBetweenRetries, func() (string, error) {
 
 		// Read from database
 		response, err := c.Query(client.Query{
@@ -199,8 +199,15 @@ func validateTelegraf(t *testing.T, endpoint string, port string, databaseName s
 			Database: databaseName,
 		})
 
-		require.NoError(t, err, "Unable to read from telegraf database")
-		require.NoError(t, response.Error(), "Telegraf query failed")
+		if err != nil {
+			logger.Logf(t, "Telegraf query failed: %s", err.Error())
+			return "", err
+		}
+
+		if response.Error() != nil {
+			logger.Logf(t, "Telegraf query error: %s", response.Error().Error())
+			return "", response.Error()
+		}
 
 		assert.NotEmpty(t, response.Results)
 
