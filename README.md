@@ -17,12 +17,6 @@
 
 This repo contains the **official** module for deploying the [TICK Stack](https://www.influxdata.com/time-series-platform/) on [GCP](https://cloud.google.com/gcp/) using [Terraform](https://www.terraform.io/) and [Packer](https://www.packer.io/).
 
-## What is TICK Stack?
-
-The TICK Stack is a loosely coupled yet tightly integrated set of open source projects designed to handle massive amounts of time-stamped information to support your metrics analysis needs.
-
-Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](https://github.com/influxdata/influxdb), [Chronograf](https://github.com/influxdata/chronograf) and [Kapacitor](https://github.com/influxdata/kapacitor) are known as the TICK Stack.
-
 ## TICK Stack Architecture
 
 ![TICK multi-cluster architecture](https://github.com/gruntwork-io/terraform-google-influx/blob/master/_docs/tick-multi-cluster-architecture.png?raw=true)
@@ -31,6 +25,12 @@ Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](htt
 
 - Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) to gather and process time series data.
 - Supports both InfluxDB Enterprise and OSS
+
+## What is TICK Stack?
+
+The TICK Stack is a loosely coupled yet tightly integrated set of open source projects designed to handle massive amounts of time-stamped information to support your metrics analysis needs.
+
+Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](https://github.com/influxdata/influxdb), [Chronograf](https://github.com/influxdata/chronograf) and [Kapacitor](https://github.com/influxdata/kapacitor) are known as the TICK Stack.
 
 ## Learn
 
