@@ -38,8 +38,9 @@ This repo is a part of [the Gruntwork Infrastructure as Code Library](https://gr
 
 ### Core concepts
 
-- [What is TICK Stack](https://github.com/gruntwork-io/terraform-google-influx/blob/master/README.md#what-is-tick-stack)
+- [What is TICK Stack](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#what-is-tick-stack)
 - [Influxdata documentation](https://docs.influxdata.com/)
+- [Using this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository)
 
 ### Repo organisation
 
@@ -50,6 +51,8 @@ This repo has the following folder structure:
 * [modules](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules): This folder contains the main implementation code for this Module, broken down into multiple standalone submodules.
 * [examples](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples): This folder contains examples of how to use the submodules.
 * [test](https://github.com/gruntwork-io/terraform-google-influx/tree/master/test): Automated tests for the submodules and examples.
+
+See [how to use this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository) to configure and deploy TICK Stack.
 
 
 ## Deploy
@@ -66,50 +69,7 @@ contains sample code optimized for learning, experimenting, and testing (but not
 If you want to deploy this repo in production, check out the following resources:
 
 - [Influx Production Installation Guide](https://docs.influxdata.com/enterprise_influxdb/v1.7/install-and-deploy/production_installation/) 
-
-### Using this repository
-
-* #### Telegraf
-
-    1. Use the scripts in the [install-telegraf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-telegraf) modules to create a [machine image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) with Telegraf installed.
-
-    1. Configure each application server to execute the [run-telegraf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-telegraf) script during boot.
-
-* #### InfluxDB
-
-    1. Use the scripts in the [install-influxdb](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-influxdb) modules to create a [machine image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) with InfluxDB Enterprise installed.
-
-    1. Deploy the server across one or more [Instance Groups](https://cloud.google.com/compute/docs/instance-groups/) using the [influxdb-cluster
-module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster).
-
-    1. Configure each server in the Instance Groups to execute the [run-influxdb](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-influxdb) script during boot.
-
-    1. Deploy a load balancer in front of the data node Instance Group.
-
-* #### Chronograf
-
-    1. Use the scripts in the [install-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-chronograf) modules to create a machine image with Chronograf installed.
-
-    1. Deploy the image in a single instance group using the [chronograf-server
-module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/chronograf-server).
-
-    1. Configure the server to execute the [run-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-chronograf) script during boot.
-
-    1. Deploy a load balancer in front of the instance group.
-
-* #### Kapacitor
-
-    1. Use the scripts in the [install-kapacitor](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-kapacitor) modules to create a machine image with Kapacitor installed.
-
-    1. Deploy the image in a single instance group using the [kapacitor-server module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/kapacitor-server).
-
-    1. Configure the server to execute the [run-kapacitor](modules/run-kapacitor) script during boot.
-
-1. Deploy a load balancer in front of the instance group.
-
-
-See the [examples folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples) for working
-sample code.
+- [Using this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository)
 
 ## Manage
 
