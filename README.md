@@ -1,9 +1,9 @@
 <!--
 :type: service
-:name: TICK Stack GCP
+:name: TICK Stack
 :description: Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) in GCP to gather and process time series data.
 :icon: /_docs/tick-stack-gcp-icon.png
-:category: Other data stores
+:category: Monitoring & alerting
 :cloud: gcp
 :tags: database, time-series
 :license: open-source
@@ -25,6 +25,8 @@ This repo contains the **official** module for deploying the [TICK Stack](https:
 
 - Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) to gather and process time series data.
 - Supports both InfluxDB Enterprise and OSS
+- Supports both InfluxDB Enterprise and OSS
+- Supports colocated clusters and separate clusters
 
 ## What is TICK Stack?
 
