@@ -1,21 +1,50 @@
+<!--
+:type: service
+:name: TICK Stack
+:description: Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) in GCP to gather and process time series data.
+:icon: /_docs/tick-stack-gcp-icon.png
+:category: Monitoring & alerting
+:cloud: gcp
+:tags: database, time-series
+:license: open-source
+:built-with: terraform, bash
+-->
+# TICK Stack GCP Module
+
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_influx)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-influx.svg?label=latest)](https://github.com/gruntwork-io/terraform-google-influx/releases/latest)
 ![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
-# TICK Stack GCP Module
 
 This repo contains the **official** module for deploying the [TICK Stack](https://www.influxdata.com/time-series-platform/) on [GCP](https://cloud.google.com/gcp/) using [Terraform](https://www.terraform.io/) and [Packer](https://www.packer.io/).
+
+## TICK Stack Architecture
+
+![TICK multi-cluster architecture](https://github.com/gruntwork-io/terraform-google-influx/blob/master/_docs/tick-multi-cluster-architecture.png?raw=true)
+
+## Features
+
+- Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) to gather and process time series data.
+- Supports both InfluxDB Enterprise and OSS
+- Supports both InfluxDB Enterprise and OSS
+- Supports colocated clusters and separate clusters
+
+## What is TICK Stack?
 
 The TICK Stack is a loosely coupled yet tightly integrated set of open source projects designed to handle massive amounts of time-stamped information to support your metrics analysis needs.
 
 Collectively, [Telegraf](https://github.com/influxdata/telegraf), [InfluxDB](https://github.com/influxdata/influxdb), [Chronograf](https://github.com/influxdata/chronograf) and [Kapacitor](https://github.com/influxdata/kapacitor) are known as the TICK Stack.
 
-![TICK multi-cluster architecture](https://github.com/gruntwork-io/terraform-google-influx/blob/master/_docs/tick-multi-cluster-architecture.png?raw=true)
+## Learn
 
-## Quick start
+This repo is a part of [the Gruntwork Infrastructure as Code Library](https://gruntwork.io/infrastructure-as-code-library/), a collection of reusable, battle-tested, production ready infrastructure code. If you’ve never used the Infrastructure as Code Library before, make sure to read [How to use the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/)!
 
-If you want to quickly spin up an InfluxDB OSS server, you can run the simple example that is in the root of this repo. Check out [influxdb-oss example documentation](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples/influxdb-oss) for instructions.
+### Core concepts
 
-## What's in this repo
+- [What is TICK Stack](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#what-is-tick-stack)
+- [Influxdata documentation](https://docs.influxdata.com/)
+- [Using this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository)
+
+### Repo organisation
 
 This repo has the following folder structure:
 
@@ -25,88 +54,48 @@ This repo has the following folder structure:
 * [examples](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples): This folder contains examples of how to use the submodules.
 * [test](https://github.com/gruntwork-io/terraform-google-influx/tree/master/test): Automated tests for the submodules and examples.
 
-## How to use this repo
-
-The general idea is to use the modules to setup different components of the TICK Stack:
-
-* ### Telegraf
-
-    1. Use the scripts in the [install-telegraf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-telegraf) modules to create a [machine image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) with Telegraf installed.
-
-    1. Configure each application server to execute the [run-telegraf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-telegraf) script during boot.
-
-* ### InfluxDB
-
-    1. Use the scripts in the [install-influxdb](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-influxdb) modules to create a [machine image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) with InfluxDB Enterprise installed.
-
-    1. Deploy the server across one or more [Instance Groups](https://cloud.google.com/compute/docs/instance-groups/) using the [influxdb-cluster
-module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster).
-
-    1. Configure each server in the Instance Groups to execute the [run-influxdb](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-influxdb) script during boot.
-
-    1. Deploy a load balancer in front of the data node Instance Group.
-
-* ### Chronograf
-
-    1. Use the scripts in the [install-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-chronograf) modules to create a machine image with Chronograf installed.
-
-    1. Deploy the image in a single instance group using the [chronograf-server
-module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/chronograf-server).
-
-    1. Configure the server to execute the [run-chronograf](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/run-chronograf) script during boot.
-
-    1. Deploy a load balancer in front of the instance group.
-
-* ### Kapacitor
-
-    1. Use the scripts in the [install-kapacitor](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/install-kapacitor) modules to create a machine image with Kapacitor installed.
-
-    1. Deploy the image in a single instance group using the [kapacitor-server module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/kapacitor-server).
-
-    1. Configure the server to execute the [run-kapacitor](modules/run-kapacitor) script during boot.
-
-1. Deploy a load balancer in front of the instance group.
+See [how to use this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository) to configure and deploy TICK Stack.
 
 
-See the [examples folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples) for working
-sample code.
+## Deploy
 
-## What's a Module?
+### Non-production deployment (quick start for learning)
 
-A Module is a canonical, reusable, best-practices definition for how to run a single piece of infrastructure, such
-as a database or server cluster. Each Module is written using a combination of [Terraform](https://www.terraform.io/)
-and scripts (mostly bash) and include automated tests, documentation, and examples. It is maintained both by the open
-source community and companies that provide commercial support.
+If you just want to try this repo out for experimenting and learning, check out the following resources:
 
-Instead of figuring out the details of how to run a piece of infrastructure from scratch, you can reuse
-existing code that has been proven in production. And instead of maintaining all that infrastructure code yourself,
-you can leverage the work of the Module community to pick up infrastructure improvements through
-a version number bump.
+- [examples folder](https://github.com/gruntwork-io/terraform-google-influx/blob/master/examples): The `examples` folder 
+contains sample code optimized for learning, experimenting, and testing (but not production usage).
 
-## Who maintains this Module?
+### Production deployment
 
-This Module is maintained by [Gruntwork](http://www.gruntwork.io/). If you're looking for help or commercial support, send an email to [modules@gruntwork.io](mailto:modules@gruntwork.io?Subject=InfluxDB%20for%20GCP%20Module). Gruntwork can help with:
+If you want to deploy this repo in production, check out the following resources:
 
-* Setup, customization, and support for this Module.
-* Modules for other types of infrastructure, such as VPCs, GKE clusters, databases, and continuous integration.
-* Modules that meet compliance requirements, such as HIPAA.
-* Consulting & Training on GCP, AWS, Terraform, and DevOps.
+- [Influx Production Installation Guide](https://docs.influxdata.com/enterprise_influxdb/v1.7/install-and-deploy/production_installation/) 
+- [Using this repository](https://github.com/gruntwork-io/terraform-google-influx/blob/master/core-concepts.md#using-this-repository)
 
-## How do I contribute to this Module?
+## Manage
 
-Contributions are very welcome! Check out the [Contribution Guidelines](https://github.com/gruntwork-io/terraform-google-influx/blob/master/CONTRIBUTING.md) for instructions.
+### Day-to-day operations
 
-## How is this Module versioned?
+- [Configuring InfluxDB](https://docs.influxdata.com/influxdb/v1.7/administration/config/)
+- [Upgrading InfluxDB](https://docs.influxdata.com/influxdb/v1.7/administration/upgrading/)
+- [Enabling HTTPS](https://docs.influxdata.com/influxdb/v1.7/administration/https_setup/)
+- [Logging in InfluxDB](https://docs.influxdata.com/influxdb/v1.7/administration/logs/)
+- [Backing up and restoring](https://docs.influxdata.com/influxdb/v1.7/administration/backup_and_restore/)
+- [Managing security](https://docs.influxdata.com/influxdb/v1.7/administration/security/)
 
-This Module follows the principles of [Semantic Versioning](http://semver.org/). You can find each new release,
-along with the changelog, in the [Releases Page](https://github.com/gruntwork-io/terraform-google-influx/releases).
+## Support
 
-During initial development, the major version will be 0 (e.g., `0.x.y`), which indicates the code does not yet have a stable API. Once we hit `1.0.0`, we will make every effort to maintain a backwards compatible API and use the MAJOR, MINOR, and PATCH versions on each release to indicate any incompatibilities.
+If you need help with this repo or anything else related to infrastructure or DevOps, Gruntwork offers [Commercial Support](https://gruntwork.io/support/) via Slack, email, and phone/video. If you’re already a Gruntwork customer, hop on Slack and ask away! If not, [subscribe now](https://www.gruntwork.io/pricing/). If you’re not sure, feel free to email us at [support@gruntwork.io](mailto:support@gruntwork.io).
+
+## Contributions
+
+Contributions to this repo are very welcome and appreciated! If you find a bug or want to add a new feature or even contribute an entirely new module, we are very happy to accept pull requests, provide feedback, and run your changes through our automated test suite.
+
+Please see [Contributing to the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/#contributing-to-the-gruntwork-infrastructure-as-code-library) for instructions.
 
 ## License
 
-This code is released under the Apache 2.0 License. Please see
-[LICENSE](https://github.com/gruntwork-io/terraform-google-influx/blob/master/LICENSE) and
-[NOTICE](https://github.com/gruntwork-io/terraform-google-influx/blob/master/NOTICE) for more details.
+Please see [LICENSE](https://github.com/gruntwork-io/terraform-google-influx/blob/master/LICENSE.txt) for details on how the code in this repo is licensed.
 
 Copyright &copy; 2019 Gruntwork, Inc.
