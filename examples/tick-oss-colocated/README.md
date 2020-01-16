@@ -25,4 +25,4 @@ You can get the public IP address of the instance using one of the following met
    - `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances $IGM --limit=1 --uri)`
    - `gcloud compute instances describe $INSTANCE_URI --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`
 
-Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
+Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.

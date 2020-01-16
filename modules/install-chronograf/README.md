@@ -29,8 +29,7 @@ The `install-chronograf` script will install the Chronograf binary as well as it
 
 We recommend running the `install-chronograf` script as part of a [Packer](https://www.packer.io/) template to 
 create a Chronograf [custom image](https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images) for [Compute Engine](https://cloud.google.com/compute/).
-You can then deploy the image across an instance group using the [managed-instance-group 
-module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/managed-instance-group) (see the 
+You can then deploy the image across an instance group (see the 
 [examples folder](https://github.com/gruntwork-io/terraform-google-influx/tree/master/examples) for fully-working sample code).
 
 ## Command line Arguments

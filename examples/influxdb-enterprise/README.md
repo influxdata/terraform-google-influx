@@ -1,6 +1,6 @@
 # InfluxDB Enterprise Example
 
-This folder shows an example of Terraform code that uses the [influxdb-cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster) module to deploy a [InfluxDB Enterprise](https://www.influxdata.com/time-series-platform/influxdb/) cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group for both Meta and Data nodes.
+This folder shows an example of Terraform code that uses the [influxdb-cluster](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-cluster) module to deploy a [InfluxDB Enterprise](https://www.influxdata.com/time-series-platform/influxdb/) cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group for both Meta and Data nodes.
 
 This example also deploys an Internal TCP Load Balancer in front of the InfluxDB cluster. Note that as the load balancer is internal, it is not accessible from the public internet. 
 
@@ -31,4 +31,4 @@ You can get the public IP address of one of the Data nodes using one of the foll
   * `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances $IGM --limit=1 --uri)`
   * `gcloud compute instances describe $INSTANCE_URI --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`
 
-Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
+Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
