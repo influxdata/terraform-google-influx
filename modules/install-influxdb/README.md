@@ -1,6 +1,6 @@
 # InfluxDB Install Script
 
-This folder contains a script for installing InfluxDB and its dependencies. Use this script to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images) that can be deployed in [GCP](https://cloud.google.com/gcp/) across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/) using the [influxdb-cluster module](../influxdb-cluster).
+This folder contains a script for installing InfluxDB and its dependencies. Use this script to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images) that can be deployed in [GCP](https://cloud.google.com/gcp/) across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/) using the [tick-instance-group module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/tick-instance-group).
 
 You can install either OSS or Enterprise version of InfluxDB using the `--distribution` argument. Allowed values are `oss` and `enterprise`.
 
@@ -25,9 +25,9 @@ gruntwork-install \
 
 Checkout the [releases](https://github.com/gruntwork-io/terraform-google-influx/releases) to find the latest version.
 
-Depending on `--distribution`, the `install-influxdb` script will install either the OSS binaries or both InfluxDB meta and data binaries, as well as their dependencies. The [run-influxdb](../run-influxdb/bin) script determines whether to startup either as a standalone, meta or data node.
+Depending on `--distribution`, the `install-influxdb` script will install either the OSS binaries or both InfluxDB meta and data binaries, as well as their dependencies. The [run-influxdb](../run-influxdb) script determines whether to startup either as a standalone, meta or data node.
 
-We recommend running the `install-influxdb` script as part of a [Packer](https://www.packer.io/) template to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images). You can then deploy the Image across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/) using the [influxdb-cluster module](../influxdb-cluster) (see the [examples folder](../../examples) for fully-working sample code).
+We recommend running the `install-influxdb` script as part of a [Packer](https://www.packer.io/) template to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images). You can then deploy the Image across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/) using the [tick-instance-group module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/tick-instance-group) (see the [examples folder](../../examples) for fully-working sample code).
 
 ## Command line Arguments
 
@@ -66,4 +66,3 @@ The `install-influxdb` script does the following:
 
 1. Installs the InfluxDB binaries
 1. Replaces default config files with specified templated config files.
-

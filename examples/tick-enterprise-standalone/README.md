@@ -31,6 +31,6 @@ You can get the instance public IP address using one of the following methods:
   * `INSTANCE_URI=$(gcloud compute instance-groups managed list-instances $IGM --limit=1 --uri)`
   * `gcloud compute instances describe $INSTANCE_URI --format='get(networkInterfaces[0].accessConfigs[0].natIP)'`
 
-Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
+Check out [How do you connect to the InfluxDB cluster](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-cluster#how-do-you-connect-to-the-influxdb-cluster) documentation for further details.
 
 To connect to Chronograf, use the steps described above, replacing `influxdb_instance_group_manager` with `chronograf_instance_group_manager`.
