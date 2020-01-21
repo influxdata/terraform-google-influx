@@ -1,6 +1,6 @@
 # InfluxDB Install Script
 
-This folder contains a script for installing InfluxDB and its dependencies. Use this script to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images) that can be deployed in [GCP](https://cloud.google.com/gcp/) across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/).
+This folder contains a script for installing InfluxDB and its dependencies. Use this script to create an InfluxDB [Compute Image](https://cloud.google.com/compute/docs/images) that can be deployed in [GCP](https://cloud.google.com/gcp/) across an [Instance Group](https://cloud.google.com/compute/docs/instance-groups/) using the [tick-instance-group module](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/tick-instance-group).
 
 You can install either OSS or Enterprise version of InfluxDB using the `--distribution` argument. Allowed values are `oss` and `enterprise`.
 
