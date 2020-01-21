@@ -1,6 +1,6 @@
 # InfluxDB Enterprise Example
 
-This folder shows an example of Terraform code that uses the [influxdb-cluster](https://github.com/gruntwork-io/terraform-aws-influx/tree/master/modules/influxdb-cluster) module to deploy a [InfluxDB Enterprise](https://www.influxdata.com/time-series-platform/influxdb/) cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group for both Meta and Data nodes.
+This folder shows an example of Terraform code that uses the [tick-instance-group](https://github.com/gruntwork-io/terraform-google-influx/tree/master/modules/tick-instance-group) module to deploy a [InfluxDB Enterprise](https://www.influxdata.com/time-series-platform/influxdb/) cluster in [GCP](https://cloud.google.com/). The cluster consists of a Managed Regional Instance Group for both Meta and Data nodes.
 
 This example also deploys an Internal TCP Load Balancer in front of the InfluxDB cluster. Note that as the load balancer is internal, it is not accessible from the public internet. 
 
