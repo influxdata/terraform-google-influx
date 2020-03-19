@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/retry"
@@ -60,6 +61,11 @@ func buildImage(t *testing.T, templatePath string, builderName string, project s
 	}
 
 	return packer.BuildArtifact(t, options)
+}
+
+func deleteImage(t *testing.T, project string, imageName string) {
+	image := gcp.FetchImage(t, project, imageName)
+	image.DeleteImage(t)
 }
 
 func getNodePublicIP(t *testing.T, exampleDir string, outputName string) string {

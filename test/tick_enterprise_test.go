@@ -2,21 +2,26 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/packer"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/gruntwork-io/terratest/modules/packer"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/stretchr/testify/require"
+
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
 const EXAMPLE_DIR_TICK_ENTERPRISE = "tick-enterprise-standalone"
+const TELEGRAF_ARTIFACT_ID = "tArtifact"
+const INFLUXDB_ARTIFACT_ID = "iArtifact"
+const CHRONOGRAF_ARTIFACT_ID = "cArtifact"
+const KAPACITOR_ARTIFACT_ID = "kArtifact"
 
 func TestTICKEnterprise(t *testing.T) {
 	t.Parallel()
@@ -91,12 +96,22 @@ func TestTICKEnterprise(t *testing.T) {
 				test_structure.SaveString(t, exampleDir, KEY_ZONE, zone)
 				test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 				test_structure.SaveString(t, exampleDir, KEY_RANDOM_ID, randomId)
-
 			})
 
 			defer test_structure.RunTestStage(t, "teardown", func() {
 				terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+				projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 				terraform.Destroy(t, terraformOptions)
+
+				tArtifactID := test_structure.LoadString(t, exampleDir, TELEGRAF_ARTIFACT_ID)
+				iArtifactID := test_structure.LoadString(t, exampleDir, INFLUXDB_ARTIFACT_ID)
+				cArtifactID := test_structure.LoadString(t, exampleDir, CHRONOGRAF_ARTIFACT_ID)
+				kArtifactID := test_structure.LoadString(t, exampleDir, KAPACITOR_ARTIFACT_ID)
+
+				deleteImage(t, projectId, tArtifactID)
+				deleteImage(t, projectId, iArtifactID)
+				deleteImage(t, projectId, cArtifactID)
+				deleteImage(t, projectId, kArtifactID)
 			})
 
 			test_structure.RunTestStage(t, "build_images", func() {
@@ -126,6 +141,10 @@ func TestTICKEnterprise(t *testing.T) {
 				packerMap["k"] = createPackerOptions(kapacitorTemplatePath, testCase.kapacitorPackerInfo.builderName, projectId, region, zone)
 
 				imageIds, err := packer.BuildArtifactsE(t, packerMap)
+				test_structure.SaveString(t, exampleDir, TELEGRAF_ARTIFACT_ID, imageIds["t"])
+				test_structure.SaveString(t, exampleDir, INFLUXDB_ARTIFACT_ID, imageIds["i"])
+				test_structure.SaveString(t, exampleDir, CHRONOGRAF_ARTIFACT_ID, imageIds["c"])
+				test_structure.SaveString(t, exampleDir, KAPACITOR_ARTIFACT_ID, imageIds["k"])
 
 				require.NoError(t, err, "Some of Packer builds failed")
 
