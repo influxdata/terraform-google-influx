@@ -1,12 +1,12 @@
 defaults: &defaults
   machine: true
   environment:
-    GRUNTWORK_INSTALLER_VERSION: v0.0.21
+    GRUNTWORK_INSTALLER_VERSION: v0.0.23
     TERRATEST_LOG_PARSER_VERSION: v0.13.13
     MODULE_CI_VERSION: v0.13.3
     TERRAFORM_VERSION: 0.12.3
     TERRAGRUNT_VERSION: NONE
-    PACKER_VERSION: 1.3.2
+    PACKER_VERSION: 1.5.4
     GOLANG_VERSION: 1.11.2
 
 install_gruntwork_utils: &install_gruntwork_utils
@@ -45,7 +45,7 @@ jobs:
 
       # Fail the build if the pre-commit hooks don't pass. Note: if you run pre-commit install locally, these hooks will
       # execute automatically every time before you commit, ensuring the build never fails at this step!
-      - run: pip install pre-commit==1.11.2
+      - run: pip install pre-commit==1.11.2 cfgv==2.0.1
       - run: pre-commit install
       - run: pre-commit run --all-files
 
@@ -115,4 +115,3 @@ workflows:
       - test:
           requires:
             - build
-

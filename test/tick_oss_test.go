@@ -2,13 +2,14 @@ package test
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
 // This is the root example
@@ -70,7 +71,11 @@ func TestTICKOSS(t *testing.T) {
 
 			defer test_structure.RunTestStage(t, "teardown", func() {
 				terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+				projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 				terraform.Destroy(t, terraformOptions)
+
+				imageName := test_structure.LoadArtifactID(t, exampleDir)
+				deleteImage(t, projectId, imageName)
 			})
 
 			test_structure.RunTestStage(t, "build_image", func() {
@@ -83,6 +88,7 @@ func TestTICKOSS(t *testing.T) {
 				templatePath := fmt.Sprintf("%s/%s", imagesDir, testCase.packerInfo.templatePath)
 
 				imageID := buildImage(t, templatePath, testCase.packerInfo.builderName, projectId, region, zone)
+				test_structure.SaveArtifactID(t, exampleDir, imageID)
 
 				clusterName := fmt.Sprintf("%s-%s", "tick-oss", randomId)
 

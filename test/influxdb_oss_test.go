@@ -10,7 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 )
 
 const EXAMPLE_DIR_INFLUXDB_OSS = "influxdb-oss"
@@ -72,12 +72,15 @@ func TestInfluxDBOSS(t *testing.T) {
 				test_structure.SaveString(t, exampleDir, KEY_ZONE, zone)
 				test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 				test_structure.SaveString(t, exampleDir, KEY_RANDOM_ID, randomId)
-
 			})
 
 			defer test_structure.RunTestStage(t, "teardown", func() {
 				terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+				projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 				terraform.Destroy(t, terraformOptions)
+
+				imageName := test_structure.LoadArtifactID(t, exampleDir)
+				deleteImage(t, projectId, imageName)
 			})
 
 			test_structure.RunTestStage(t, "build_image", func() {
@@ -90,6 +93,7 @@ func TestInfluxDBOSS(t *testing.T) {
 				templatePath := fmt.Sprintf("%s/%s", imagesDir, testCase.packerInfo.templatePath)
 
 				imageID := buildImage(t, templatePath, testCase.packerInfo.builderName, projectId, region, zone)
+				test_structure.SaveArtifactID(t, exampleDir, imageID)
 
 				baseName := "influxdb-oss"
 
