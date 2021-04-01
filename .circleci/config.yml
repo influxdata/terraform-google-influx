@@ -92,5 +92,5 @@ workflows:
       - precommit
       - test:
           requires:
-            - build
+            - precommit
 
