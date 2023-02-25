@@ -35,7 +35,7 @@ require (
 	github.com/urfave/cli v1.20.0 // indirect
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c // indirect
-	golang.org/x/sys v0.0.0-20190515120540-06a5c4944438 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	google.golang.org/api v0.5.1-0.20190510010909-bbbc0e98e3cc // indirect
