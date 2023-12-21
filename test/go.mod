@@ -19,7 +19,7 @@ require (
 	github.com/spf13/cobra v0.0.3 // indirect
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli v1.20.0 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
 	k8s.io/client-go v0.20.0-alpha.2 // indirect
 	k8s.io/kubernetes v1.14.1 // indirect
 )
