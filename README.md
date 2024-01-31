@@ -25,7 +25,6 @@ This repo contains the **official** module for deploying the [TICK Stack](https:
 
 - Deploy the TICK stack (Telegraf, InfluxDB, Chronograf, Kapacitor) to gather and process time series data.
 - Supports both InfluxDB Enterprise and OSS
-- Supports both InfluxDB Enterprise and OSS
 - Supports colocated clusters and separate clusters
 
 ## What is TICK Stack?
